@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .welcome-card {
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+    }
+    
+    .welcome-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .welcome-avatar {
+        width: 60px;
+        height: 60px;
+        background: var(--accent-gold);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--bg-primary);
+    }
+    
+    .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        transition: transform var(--transition-fast);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+        line-height: 1;
+    }
+    
+    .stat-label {
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+    
+    .exam-actions {
+        margin-top: 2rem;
+    }
+    
+    .action-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .subjects-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .subject-badge {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-full);
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+    }
+    
+    .subject-badge.compulsory {
+        background: rgba(201, 160, 61, 0.15);
+        border-color: var(--accent-gold);
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <div class="welcome-header">
+            <div class="welcome-avatar">
+                {{ user.full_name[0].upper() }}
+            </div>
+            <div>
+                <h2 style="margin-bottom: 0.25rem;">Welcome back, {{ user.full_name }}!</h2>
+                <p style="margin-bottom: 0; color: var(--text-secondary);">
+                    {% if user.has_taken_exam %}
+                        You've completed your exam. Check your results below.
+                    {% else %}
+                        Ready to start your JAMB 2026 practice exam?
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Grid -->
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value">{{ user.get_chosen_subjects()|length + 1 }}</div>
+            <div class="stat-label">Subjects Registered</div>
+            <div class="subjects-list">
+                <span class="subject-badge compulsory">English Language</span>
+                {% for subject in user.get_chosen_subjects() %}
+                    <span class="subject-badge">{{ subject }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">❓</div>
+            <div class="stat-value">180</div>
+            <div class="stat-label">Total Questions</div>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">60 English + 3×40 electives</p>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value">2:00</div>
+            <div class="stat-label">Hours Duration</div>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Timed exam session</p>
+        </div>
+    </div>
+    
+    <!-- Exam Actions -->
+    <div class="exam-actions">
+        {% if active_session %}
+            <!-- Active Exam Session -->
+            <div class="action-card">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+                <h3>You have an active exam session</h3>
+                <p style="margin-bottom: 1.5rem;">Your progress has been saved. Continue where you left off.</p>
+                <a href="{{ url_for('resume_exam') }}" class="btn btn-primary btn-lg">Resume Exam →</a>
+                <p style="margin-top: 1rem; font-size: 0.85rem;">
+                    Started: {{ active_session.started_at.strftime('%B %d, %Y at %I:%M %p') }}
+                </p>
+            </div>
+        {% elif user.has_taken_exam %}
+            <!-- Exam Already Taken -->
+            <div class="action-card">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                <h3>You've completed your exam</h3>
+                <p style="margin-bottom: 1.5rem;">View your detailed results and see how you performed.</p>
+                <a href="{{ url_for('result') }}" class="btn btn-primary btn-lg">View Results →</a>
+            </div>
+        {% else %}
+            <!-- Ready to Start -->
+            <div class="action-card">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                <h3>Ready to test your knowledge?</h3>
+                <p style="margin-bottom: 1.5rem;">Start your 2-hour JAMB CBT practice exam with 180 questions.</p>
+                <a href="{{ url_for('start_exam') }}" class="btn btn-primary btn-lg">Start Exam Now →</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Tips Section -->
+    <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+        <h4 style="margin-bottom: 1rem;">💡 Exam Tips</h4>
+        <ul style="color: var(--text-secondary); padding-left: 1.5rem;">
+            <li>Ensure you have a stable internet connection before starting</li>
+            <li>Your progress is saved automatically after each question</li>
+            <li>You can mark questions for review and return to them later</li>
+            <li>The timer starts immediately when you begin the exam</li>
+            <li>Don't refresh the page during the exam unless necessary</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1148 @@
+{% extends "base.html" %}
+
+{% block title %}Exam in Progress{% endblock %}       
+{% block page_title %}JAMB 2026 CBT Exam{% endblock %}
+{% block extra_css %}
+<style>
+    /* Hide sidebar during exam for maximum focus */
+    .sidebar {
+        display: none;
+    }
+
+    .main-wrapper {                                           margin-left: 0 !important;
+    }
+                                                          /* Exam Layout */
+    .exam-wrapper {
+        display: flex;
+        min-height: calc(100vh - var(--navbar-height) - var(--footer-height));
+        background: var(--bg-primary);
+    }
+
+    /* Question Panel - Left Side */
+    .question-panel {
+        flex: 1;
+        padding: 1.5rem;
+        max-width: calc(100% - 320px);
+        overflow-y: auto;
+    }
+
+    /* Palette Panel - Right Side */
+    .palette-panel {
+        width: 320px;
+        background: var(--bg-card);
+        border-left: 1px solid var(--border-color);
+        padding: 1.5rem 1rem;
+        overflow-y: auto;
+        position: sticky;
+        top: var(--navbar-height);
+        height: calc(100vh - var(--navbar-height) - var(--footer-height));
+    }
+
+    /* Timer Card */
+    .timer-card {
+        background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .timer-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .timer-display {
+        font-family: 'Courier New', 'Monaco', monospace;
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+        line-height: 1.2;
+        letter-spacing: 4px;
+    }
+
+    .timer-display.warning {
+        color: var(--warning);
+        animation: timer-pulse 1s infinite;
+    }
+
+    .timer-display.danger {
+        color: var(--danger);
+        animation: timer-pulse 0.5s infinite;
+    }
+
+    @keyframes timer-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    /* Subject Progress */
+    .subject-progress {
+        margin-bottom: 1.5rem;
+    }
+
+    .subject-item {
+        margin-bottom: 0.75rem;
+    }
+
+    .subject-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: var(--bg-primary);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--accent-gold);
+        border-radius: var(--radius-full);
+        transition: width 0.3s ease;
+    }
+
+    /* Palette Grid */
+    .palette-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .palette-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .palette-item {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+    }
+
+    .palette-item:hover {
+        background: var(--bg-hover);
+        border-color: var(--accent-gold);
+        transform: scale(1.05);
+    }
+
+    .palette-item.current {
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 15px rgba(201, 160, 61, 0.4);
+    }
+
+    .palette-item.answered {
+        background: rgba(40, 167, 69, 0.2);
+        border-color: var(--success);
+        color: var(--success);
+    }
+
+    .palette-item.answered.current {
+        background: var(--success);
+        color: white;
+        border-color: var(--success);
+    }
+
+    .palette-item.marked {
+        background: rgba(255, 193, 7, 0.2);
+        border-color: var(--warning);
+        color: var(--warning);
+    }
+
+    .palette-item.visited {
+        background: rgba(23, 162, 184, 0.15);
+        border-color: var(--info);
+        color: var(--info);
+    }
+
+    /* Palette Legend */
+    .palette-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.75rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+    }
+
+    .legend-color.current { background: var(--accent-gold); border-color: var(--accent-gold); }
+    .legend-color.answered { background: rgba(40, 167, 69, 0.3); border-color: var(--success); }
+    .legend-color.marked { background: rgba(255, 193, 7, 0.3); border-color: var(--warning); }
+    .legend-color.visited { background: rgba(23, 162, 184, 0.2); border-color: var(--info); }
+    .legend-color.unanswered { background: var(--bg-surface); border-color: var(--border-color); }
+
+    /* Question Container */
+    .question-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .question-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .question-badge {
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .question-subject {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .question-number {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+    }
+
+    .question-text {
+        font-size: 1.2rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    /* Options */
+    .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .option-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .option-item:hover {
+        background: var(--bg-hover);
+        border-color: var(--border-light);
+        transform: translateX(4px);
+    }
+
+    .option-item.selected {
+        background: rgba(201, 160, 61, 0.15);
+        border-color: var(--accent-gold);
+        border-left-width: 4px;
+    }
+
+    .option-letter {
+        width: 32px;
+        height: 32px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--text-secondary);
+        flex-shrink: 0;
+    }
+
+    .option-item.selected .option-letter {
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        border-color: var(--accent-gold);
+    }
+
+    .option-text {
+        flex: 1;
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+
+    /* Navigation Buttons */
+    .exam-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .nav-group {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-mark {
+        background: transparent;
+        border: 1px solid var(--warning);
+        color: var(--warning);
+    }
+
+    .btn-mark:hover {
+        background: rgba(255, 193, 7, 0.1);
+        border-color: var(--warning);
+    }
+
+    .btn-mark.active {
+        background: var(--warning);
+        color: var(--bg-primary);
+    }
+
+    .btn-submit {
+        background: var(--danger);
+        color: white;
+        border-color: var(--danger);
+    }
+
+    .btn-submit:hover {
+        background: var(--danger-light);
+        border-color: var(--danger-light);
+    }
+
+    /* Submit Confirmation Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .modal-card {
+        max-width: 450px;
+        width: 90%;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-xl);
+    }
+
+    .modal-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-summary {
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    /* Auto-save indicator */
+    .autosave-indicator {
+        position: fixed;
+        bottom: 80px;
+        right: 340px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-full);
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 100;
+    }
+
+    .autosave-indicator.show {
+        opacity: 1;
+    }
+
+    .autosave-indicator.saved {
+        color: var(--success);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+        .exam-wrapper {
+            flex-direction: column;
+        }
+
+        .question-panel {
+            max-width: 100%;
+            padding: 1rem;
+        }
+
+        .palette-panel {
+            width: 100%;
+            position: static;
+            height: auto;
+            border-left: none;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .autosave-indicator {
+            right: 20px;
+            bottom: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .question-container {
+            padding: 1.25rem;
+        }
+
+        .question-text {
+            font-size: 1rem;
+        }
+
+        .option-item {
+            padding: 1rem;
+        }
+
+        .exam-nav {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-group {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .timer-display {
+            font-size: 2.5rem;
+        }
+
+        .palette-grid {
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .palette-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .question-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+        }
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 15, 26, 0.9);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--border-color);
+        border-top-color: var(--accent-gold);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="exam-wrapper">
+    <!-- Question Panel -->
+    <div class="question-panel">
+        <div class="question-container" id="questionContainer">
+            <div class="question-header">
+                <div class="question-meta">
+                    <span class="question-badge" id="currentSubject">Loading...</span>
+                    <span class="question-subject" id="questionCount">Question 0 of 180</span>
+                </div>
+                <span class="question-number" id="questionNumber">Q1</span>
+            </div>
+
+            <div class="question-text" id="questionText">
+                Loading question...
+            </div>
+
+            <div class="options-container" id="optionsContainer">
+                <!-- Options will be dynamically populated -->
+            </div>
+
+            <div class="exam-nav">
+                <div class="nav-group">
+                    <button class="btn btn-outline" id="prevBtn" disabled>
+                        ← Previous
+                    </button>
+                    <button class="btn btn-outline" id="nextBtn">
+                        Next →
+                    </button>
+                </div>
+                <div class="nav-group">
+                    <button class="btn btn-mark" id="markBtn">
+                        🔖 Mark for Review
+                    </button>
+                    <button class="btn btn-submit" id="submitBtn">
+                        ✓ Submit Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Palette Panel -->
+    <div class="palette-panel">
+        <div class="timer-card">
+            <div class="timer-label">Time Remaining</div>
+            <div class="timer-display" id="timerDisplay">02:00:00</div>
+        </div>
+
+        <div class="subject-progress" id="subjectProgress">
+            <!-- Subject progress bars will be dynamically populated -->
+        </div>
+
+        <div class="palette-title">Question Palette</div>
+
+        <div class="palette-grid" id="paletteGrid">
+            <!-- Palette items will be dynamically populated -->
+        </div>
+
+        <div class="palette-legend">
+            <div class="legend-item">
+                <span class="legend-color current"></span>
+                <span>Current</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color answered"></span>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color marked"></span>
+                <span>Marked</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color visited"></span>
+                <span>Visited</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color unanswered"></span>
+                <span>Unanswered</span>
+            </div>
+        </div>
+
+        <button class="btn btn-outline btn-block" id="togglePaletteBtn" style="display: none;">
+            Close Palette
+        </button>
+    </div>
+</div>
+
+<!-- Auto-save Indicator -->
+<div class="autosave-indicator" id="autosaveIndicator">
+    <span>💾</span>
+    <span id="autosaveText">Saving...</span>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal-overlay" id="submitModal">
+    <div class="modal-card">
+        <div class="modal-icon">⚠️</div>
+        <h3 class="modal-title">Submit Exam?</h3>
+        <p style="color: var(--text-secondary);">Are you sure you want to submit your exam? This action cannot be undone.</p>
+
+        <div class="modal-summary" id="modalSummary">
+            <div class="summary-row">
+                <span>Total Questions:</span>
+                <span>180</span>
+            </div>
+            <div class="summary-row">
+                <span>Answered:</span>
+                <span id="summaryAnswered">0</span>
+            </div>
+            <div class="summary-row">
+                <span>Marked for Review:</span>
+                <span id="summaryMarked">0</span>
+            </div>
+            <div class="summary-row">
+                <span>Unanswered:</span>
+                <span id="summaryUnanswered">180</span>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelSubmitBtn">Cancel</button>
+            <button class="btn btn-danger" id="confirmSubmitBtn">Submit Exam</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Exam Data from server
+    const examData = {
+        sessionId: "{{ session_id }}",
+        questions: {{ questions | tojson }},
+        savedAnswers: {{ saved_answers | tojson if saved_answers else {} }},
+        remainingTime: {{ remaining_time | default(7200) }},
+        totalQuestions: {{ questions | length }}
+    };
+
+    // Global state
+    let currentIndex = 0;
+    let answers = {...examData.savedAnswers};
+    let markedQuestions = new Set();
+    let timerInterval;
+    let timeRemaining = examData.remainingTime;
+    let autoSaveTimeout;
+    let examSubmitted = false;
+    let submitInProgress = false;
+
+    // DOM Elements
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const currentSubject = document.getElementById('currentSubject');
+    const questionCount = document.getElementById('questionCount');
+    const questionNumber = document.getElementById('questionNumber');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const markBtn = document.getElementById('markBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const paletteGrid = document.getElementById('paletteGrid');
+    const submitModal = document.getElementById('submitModal');
+    const cancelSubmitBtn = document.getElementById('cancelSubmitBtn');
+    const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const autosaveIndicator = document.getElementById('autosaveIndicator');
+    const autosaveText = document.getElementById('autosaveText');
+
+    // Initialize Exam
+    function initExam() {
+        if (!examData.questions.length) {
+            alert('No questions found. Please contact admin.');
+            window.location.href = '/dashboard';
+            return;
+        }
+        
+        renderQuestion(currentIndex);
+        renderPalette();
+        updateSubjectProgress();
+        startTimer();
+        updateNavigationButtons();
+    }
+
+    // Render Question
+    function renderQuestion(index) {
+        const question = examData.questions[index];
+        if (!question) return;
+
+        const qNumber = index + 1;
+
+        currentSubject.textContent = question.subject;
+        questionCount.textContent = `Question ${qNumber} of ${examData.totalQuestions}`;
+        questionNumber.textContent = `Q${qNumber}`;
+        questionText.textContent = question.question_text;
+
+        // Render options
+        const options = ['A', 'B', 'C', 'D'];
+        const savedAnswer = answers[question.id];
+
+        optionsContainer.innerHTML = options.map(letter => `
+            <div class="option-item ${savedAnswer === letter ? 'selected' : ''}" data-option="${letter}">
+                <span class="option-letter">${letter}</span>
+                <span class="option-text">${question[`option_${letter.toLowerCase()}`] || ''}</span>
+            </div>
+        `).join('');
+
+        // Add click handlers
+        optionsContainer.querySelectorAll('.option-item').forEach(opt => {
+            opt.addEventListener('click', () => selectOption(opt.dataset.option));
+        });
+
+        // Update mark button
+        updateMarkButton(qNumber);
+
+        // Update palette highlight
+        updatePaletteHighlight();
+    }
+
+    // Select Option
+    function selectOption(option) {
+        const question = examData.questions[currentIndex];
+        answers[question.id] = option;
+
+        // Update UI
+        optionsContainer.querySelectorAll('.option-item').forEach(opt => {
+            opt.classList.toggle('selected', opt.dataset.option === option);
+        });
+
+        // Update palette
+        updatePaletteItem(currentIndex + 1);
+        updateSubjectProgress();
+
+        // Auto-save
+        autoSaveAnswer(question.id, option);
+    }
+
+    // Auto-save answer
+    async function autoSaveAnswer(questionId, answer) {
+        clearTimeout(autoSaveTimeout);
+
+        autosaveIndicator.classList.add('show');
+        autosaveText.textContent = 'Saving...';
+
+        autoSaveTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch('/exam/save-answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: examData.sessionId,
+                        question_id: questionId,
+                        selected_answer: answer
+                    })
+                });
+
+                if (response.ok) {
+                    autosaveText.textContent = 'Saved ✓';
+                    setTimeout(() => {
+                        autosaveIndicator.classList.remove('show');
+                    }, 1500);
+                } else {
+                    autosaveText.textContent = 'Failed';
+                }
+            } catch (error) {
+                autosaveText.textContent = 'Offline';
+                console.error('Auto-save error:', error);
+            }
+        }, 800);
+    }
+
+    // Render Question Palette
+    function renderPalette() {
+        paletteGrid.innerHTML = '';
+
+        for (let i = 1; i <= examData.totalQuestions; i++) {
+            const item = document.createElement('div');
+            item.className = 'palette-item';
+            item.textContent = i;
+            item.dataset.question = i;
+            updatePaletteItemState(item, i);
+            item.addEventListener('click', () => navigateToQuestion(i - 1));
+            paletteGrid.appendChild(item);
+        }
+    }
+
+    // Update single palette item
+    function updatePaletteItem(qNumber) {
+        const item = paletteGrid.children[qNumber - 1];
+        if (item) {
+            updatePaletteItemState(item, qNumber);
+        }
+    }
+
+    // Update palette item state
+    function updatePaletteItemState(item, qNumber) {
+        const question = examData.questions[qNumber - 1];
+        const isAnswered = question && answers[question.id];
+        const isMarked = markedQuestions.has(qNumber);
+        
+        item.classList.remove('answered', 'marked');
+        
+        if (isMarked) {
+            item.classList.add('marked');
+        } else if (isAnswered) {
+            item.classList.add('answered');
+        }
+    }
+
+    // Update palette highlight (current question)
+    function updatePaletteHighlight() {
+        for (let i = 0; i < paletteGrid.children.length; i++) {
+            paletteGrid.children[i].classList.remove('current');
+        }
+        const currentItem = paletteGrid.children[currentIndex];
+        if (currentItem) {
+            currentItem.classList.add('current');
+        }
+    }
+
+    // Navigate to question
+    function navigateToQuestion(index) {
+        if (index >= 0 && index < examData.questions.length && !examSubmitted) {
+            currentIndex = index;
+            renderQuestion(currentIndex);
+            updateNavigationButtons();
+        }
+    }
+
+    // Update navigation buttons
+    function updateNavigationButtons() {
+        if (prevBtn) prevBtn.disabled = currentIndex === 0;
+        if (nextBtn) nextBtn.disabled = currentIndex === examData.questions.length - 1;
+    }
+
+    // Update mark button
+    function updateMarkButton(qNumber) {
+        if (markedQuestions.has(qNumber)) {
+            markBtn.classList.add('active');
+            markBtn.innerHTML = '⭐ Marked';
+        } else {
+            markBtn.classList.remove('active');
+            markBtn.innerHTML = '🔖 Mark';
+        }
+    }
+
+    // Toggle mark question
+    function toggleMarkQuestion() {
+        if (examSubmitted) return;
+        
+        const qNumber = currentIndex + 1;
+        if (markedQuestions.has(qNumber)) {
+            markedQuestions.delete(qNumber);
+        } else {
+            markedQuestions.add(qNumber);
+        }
+        updateMarkButton(qNumber);
+        updatePaletteItem(qNumber);
+    }
+
+    // Update subject progress
+    function updateSubjectProgress() {
+        const subjects = {};
+        examData.questions.forEach((q, idx) => {
+            if (!subjects[q.subject]) {
+                subjects[q.subject] = { total: 0, answered: 0 };
+            }
+            subjects[q.subject].total++;
+            if (answers[q.id]) {
+                subjects[q.subject].answered++;
+            }
+        });
+
+        const progressContainer = document.getElementById('subjectProgress');
+        if (progressContainer) {
+            progressContainer.innerHTML = Object.entries(subjects).map(([subject, data]) => `
+                <div class="subject-item">
+                    <div class="subject-header">
+                        <span>${subject}</span>
+                        <span>${data.answered}/${data.total}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${(data.answered / data.total) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Timer functions
+    function startTimer() {
+        updateTimerDisplay();
+        
+        timerInterval = setInterval(() => {
+            if (examSubmitted || submitInProgress) return;
+            
+            if (timeRemaining <= 1) {
+                clearInterval(timerInterval);
+                autoSubmitExam();
+            } else {
+                timeRemaining--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const hours = Math.floor(timeRemaining / 3600);
+        const minutes = Math.floor((timeRemaining % 3600) / 60);
+        const seconds = timeRemaining % 60;
+        
+        let timeString = '';
+        if (hours > 0) {
+            timeString = `${String(hours).padStart(2, '0')}:`;
+        }
+        timeString += `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timerDisplay) timerDisplay.textContent = timeString;
+        
+        // Warning states
+        if (timerDisplay) {
+            timerDisplay.classList.remove('warning', 'danger');
+            if (timeRemaining <= 300) {
+                timerDisplay.classList.add('danger');
+            } else if (timeRemaining <= 600) {
+                timerDisplay.classList.add('warning');
+            }
+        }
+    }
+
+    // Get exam summary
+    function getExamSummary() {
+        const total = examData.questions.length;
+        const answered = Object.keys(answers).length;
+        const marked = markedQuestions.size;
+        const unanswered = total - answered;
+        return { total, answered, marked, unanswered };
+    }
+
+    // Show submit modal
+    function showSubmitModal() {
+        if (examSubmitted || submitInProgress) return;
+        
+        const summary = getExamSummary();
+        const summaryAnswered = document.getElementById('summaryAnswered');
+        const summaryMarked = document.getElementById('summaryMarked');
+        const summaryUnanswered = document.getElementById('summaryUnanswered');
+        
+        if (summaryAnswered) summaryAnswered.textContent = summary.answered;
+        if (summaryMarked) summaryMarked.textContent = summary.marked;
+        if (summaryUnanswered) summaryUnanswered.textContent = summary.unanswered;
+        
+        if (submitModal) submitModal.style.display = 'flex';
+    }
+
+    // Submit exam with loading state and timeout
+    async function submitExam() {
+        if (examSubmitted || submitInProgress) return;
+        
+        examSubmitted = true;
+        submitInProgress = true;
+        
+        clearInterval(timerInterval);
+        
+        // Show loading overlay
+        if (loadingOverlay) loadingOverlay.style.display = 'flex';
+        
+        // Change submit button text if visible
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Submitting...';
+        }
+        
+        // Set timeout to prevent infinite spin (15 seconds)
+        const timeoutId = setTimeout(() => {
+            if (submitInProgress) {
+                submitInProgress = false;
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '📤 Submit Exam';
+                }
+                alert('Submission is taking longer than expected. Please check your connection and try again.');
+                examSubmitted = false;
+            }
+        }, 15000);
+        
+        try {
+            const response = await fetch('/exam/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: examData.sessionId })
+            });
+            
+            clearTimeout(timeoutId);
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = '/exam/result';
+            } else {
+                throw new Error(data.error || 'Submission failed');
+            }
+        } catch (error) {
+            clearTimeout(timeoutId);
+            console.error('Submit error:', error);
+            alert('Error submitting exam: ' + error.message + '. Please try again.');
+            
+            // Reset state
+            examSubmitted = false;
+            submitInProgress = false;
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '📤 Submit Exam';
+            }
+            // Restart timer
+            startTimer();
+        }
+    }
+
+    // Auto-submit on time expiry
+    function autoSubmitExam() {
+        if (examSubmitted || submitInProgress) return;
+        
+        const confirmSubmit = confirm('⏰ Time is up! Your exam will be submitted automatically.');
+        if (confirmSubmit) {
+            submitExam();
+        } else {
+            // Force submit anyway
+            submitExam();
+        }
+    }
+
+    // Close modal on outside click
+    if (submitModal) {
+        submitModal.addEventListener('click', (e) => {
+            if (e.target === submitModal) {
+                submitModal.style.display = 'none';
+            }
+        });
+    }
+
+    // Event Listeners
+    if (prevBtn) prevBtn.addEventListener('click', () => navigateToQuestion(currentIndex - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => navigateToQuestion(currentIndex + 1));
+    if (markBtn) markBtn.addEventListener('click', toggleMarkQuestion);
+    if (submitBtn) submitBtn.addEventListener('click', showSubmitModal);
+    if (cancelSubmitBtn) cancelSubmitBtn.addEventListener('click', () => {
+        if (submitModal) submitModal.style.display = 'none';
+    });
+    if (confirmSubmitBtn) confirmSubmitBtn.addEventListener('click', () => {
+        if (submitModal) submitModal.style.display = 'none';
+        submitExam();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (examSubmitted || submitInProgress) return;
+        
+        if (e.key === 'ArrowLeft' && prevBtn && !prevBtn.disabled) {
+            navigateToQuestion(currentIndex - 1);
+            e.preventDefault();
+        } else if (e.key === 'ArrowRight' && nextBtn && !nextBtn.disabled) {
+            navigateToQuestion(currentIndex + 1);
+            e.preventDefault();
+        } else if (e.key === 'm' || e.key === 'M') {
+            toggleMarkQuestion();
+            e.preventDefault();
+        } else if (e.key >= '1' && e.key <= '4') {
+            const option = String.fromCharCode(65 + parseInt(e.key) - 1);
+            selectOption(option);
+            e.preventDefault();
+        }
+    });
+
+    // Warn before leaving
+    window.addEventListener('beforeunload', (e) => {
+        if (!examSubmitted && !submitInProgress) {
+            e.preventDefault();
+            e.returnValue = '⚠️ Your exam is in progress. Are you sure you want to leave? Your answers may not be saved.';
+            return e.returnValue;
+        }
+    });
+
+    // Initialize
+    initExam();
+</script>
+{% endblock %}

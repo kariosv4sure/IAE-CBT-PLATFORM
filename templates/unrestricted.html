@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}Account Pending Activation{% endblock %}
+
+{% block page_title %}Welcome to IAE Tutorials{% endblock %}
+
+{% block extra_css %}
+<style>
+    .unrestricted-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .status-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 2rem;
+    }
+    
+    .status-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255, 193, 7, 0.15);
+        border: 2px solid var(--warning);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        animation: pulse-warning 2s infinite;
+    }
+    
+    @keyframes pulse-warning {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 0 15px rgba(255, 193, 7, 0);
+        }
+    }
+    
+    .status-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: var(--warning);
+    }
+    
+    .status-message {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+    
+    .info-box {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+    
+    .info-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .info-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        color: var(--text-secondary);
+    }
+    
+    .info-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .info-list .check-icon {
+        color: var(--success);
+        font-weight: bold;
+        margin-top: 0.2rem;
+    }
+    
+    .steps-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .step-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin: 0 auto 1rem;
+    }
+    
+    .step-title {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+    }
+    
+    .step-desc {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+    
+    .contact-card {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .contact-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-methods {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .contact-method {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+    }
+    
+    .contact-icon {
+        font-size: 1.5rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .vip-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent-gold), #b08b2f);
+        color: var(--bg-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-left: 0.5rem;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .unrestricted-container {
+            padding: 0 0.5rem;
+        }
+        
+        .status-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            font-size: 2.5rem;
+        }
+        
+        .status-title {
+            font-size: 1.5rem;
+        }
+        
+        .contact-methods {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="unrestricted-container">
+    <!-- Main Status Card -->
+    <div class="status-card">
+        <div class="status-icon">⏳</div>
+        <h1 class="status-title">Account Pending Activation</h1>
+        <p class="status-message">
+            Your account has been successfully created, but VIP access is required to take the JAMB CBT practice exam. 
+            An administrator will review and activate your account shortly.
+        </p>
+        
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(201, 160, 61, 0.1); padding: 0.5rem 1rem; border-radius: var(--radius-full);">
+            <span style="color: var(--accent-gold);">🕐</span>
+            <span style="color: var(--text-secondary);">Activation typically takes 5-10 minutes during business hours</span>
+        </div>
+    </div>
+    
+    <!-- Account Info Box -->
+    <div class="info-box">
+        <div class="info-title">
+            <span>📋</span>
+            <span>Your Account Information</span>
+        </div>
+        <ul class="info-list">
+            <li>
+                <span class="check-icon">👤</span>
+                <span><strong>Username:</strong> {{ current_user.username }}</span>
+            </li>
+            <li>
+                <span class="check-icon">📧</span>
+                <span><strong>Email:</strong> {{ current_user.email }}</span>
+            </li>
+            <li>
+                <span class="check-icon">📚</span>
+                <span>
+                    <strong>Selected Subjects:</strong> 
+                    English Language (Compulsory) + 
+                    {% for subject in current_user.get_chosen_subjects() %}
+                        {{ subject }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </li>
+            <li>
+                <span class="check-icon">📅</span>
+                <span><strong>Registered:</strong> {{ current_user.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+            </li>
+            <li>
+                <span class="check-icon">🏷️</span>
+                <span>
+                    <strong>Status:</strong> 
+                    <span style="color: var(--warning);">Pending VIP Activation</span>
+                    <span class="vip-badge">VIP Required</span>
+                </span>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- What Happens Next -->
+    <h3 style="margin-bottom: 1.5rem; text-align: center;">What Happens Next?</h3>
+    <div class="steps-container">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-title">Admin Review</div>
+            <div class="step-desc">Our team verifies your registration and activates VIP access</div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-title">Email Notification</div>
+            <div class="step-desc">You'll receive an email when your account is activated</div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-title">Start Practicing</div>
+            <div class="step-desc">Login and access the full 180-question CBT exam</div>
+        </div>
+    </div>
+    
+    <!-- What You'll Get -->
+    <div class="info-box">
+        <div class="info-title">
+            <span>✨</span>
+            <span>With VIP Access, You'll Get:</span>
+        </div>
+        <ul class="info-list">
+            <li>
+                <span class="check-icon">✓</span>
+                <span>Full 180-question JAMB CBT practice exam</span>
+            </li>
+            <li>
+                <span class="check-icon">✓</span>
+                <span>60 English Language questions + 40 each from your 3 chosen subjects</span>
+            </li>
+            <li>
+                <span class="check-icon">✓</span>
+                <span>Realistic 2-hour timed exam environment</span>
+            </li>
+            <li>
+                <span class="check-icon">✓</span>
+                <span>Detailed results with explanations for every question</span>
+            </li>
+            <li>
+                <span class="check-icon">✓</span>
+                <span>Save and resume functionality</span>
+            </li>
+            <li>
+                <span class="check-icon">✓</span>
+                <span>Access to leaderboard and performance tracking</span>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Contact Support -->
+    <div class="contact-card">
+        <h3 class="contact-title">Need Faster Activation?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+            If you've been waiting for more than 30 minutes, please contact support.
+        </p>
+        <div class="contact-methods">
+            <div class="contact-method">
+                <span class="contact-icon">📧</span>
+                <span>mosesdanielfiyinfoluwa08@gmail.com</span>
+            </div>
+            <div class="contact-method">
+                <span class="contact-icon">📞</span>
+                <span>+2347079396111</span>
+            </div>
+            <div class="contact-method">
+                <span class="contact-icon">💬</span>
+                <span>Live Chat (9am-6pm WAT)</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+            🔄 Refresh Status
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-gold">
+            🚪 Logout
+        </a>
+    </div>
+    
+    <!-- Auto-refresh note -->
+    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
+        This page will automatically check for activation. You can also refresh manually.
+    </p>
+</div>
+
+<!-- Auto-check for VIP status -->
+<script>
+    // Check every 30 seconds if user has been activated
+    let checkCount = 0;
+    const maxChecks = 60; // 30 minutes of checking
+    
+    function checkActivation() {
+        if (checkCount >= maxChecks) {
+            console.log('Stopped auto-checking for activation');
+            return;
+        }
+        
+        checkCount++;
+        
+        fetch('/dashboard', { method: 'HEAD' })
+            .then(response => {
+                // If we get redirected to dashboard (not unrestricted), user is activated
+                if (response.url.includes('/dashboard') && !response.url.includes('/unrestricted')) {
+                    window.location.href = '/dashboard';
+                }
+            })
+            .catch(err => console.log('Activation check:', err));
+    }
+    
+    // Check every 30 seconds
+    setInterval(checkActivation, 30000);
+    
+    // First check after 10 seconds
+    setTimeout(checkActivation, 10000);
+</script>
+{% endblock %}

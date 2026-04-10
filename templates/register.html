@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block page_title %}Create Your Account{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-container {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+    
+    .register-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .register-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .register-header h2 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .register-header p {
+        color: var(--text-secondary);
+    }
+    
+    .subject-selection {
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .subject-note {
+        background: rgba(201, 160, 61, 0.1);
+        border-left: 3px solid var(--accent-gold);
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    @media (max-width: 480px) {
+        .register-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h2>Join IAE Tutorials</h2>
+                <p>Start your JAMB 2026 preparation today</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('register') }}" data-validate>
+                <div class="form-group">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <input type="text" 
+                           name="full_name" 
+                           id="full_name" 
+                           class="form-control" 
+                           placeholder="Enter your full name"
+                           value="{{ form_data.full_name if form_data else '' }}"
+                           data-validate="required"
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" 
+                           name="username" 
+                           id="username" 
+                           class="form-control" 
+                           placeholder="Choose a username"
+                           value="{{ form_data.username if form_data else '' }}"
+                           data-validate="required"
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" 
+                           name="email" 
+                           id="email" 
+                           class="form-control" 
+                           placeholder="Enter your email"
+                           value="{{ form_data.email if form_data else '' }}"
+                           data-validate="required email"
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" 
+                           name="password" 
+                           id="password" 
+                           class="form-control" 
+                           placeholder="Minimum 6 characters"
+                           data-validate="required min:6"
+                           required>
+                </div>
+                
+                <div class="subject-note">
+                    <strong>📚 English Language is compulsory (60 questions)</strong><br>
+                    Select 3 additional subjects below (40 questions each)
+                </div>
+                
+                <div class="subject-selection">
+                    <label class="form-label">Choose Your 3 Elective Subjects</label>
+                    
+                    <div class="form-group">
+                        <select name="subject1" id="subject1" class="form-control" data-validate="required" required>
+                            <option value="">-- Select Subject 1 --</option>
+                            {% for subject in subjects_list %}
+                                {% if subject != 'English Language' %}
+                                    <option value="{{ subject }}" {% if form_data and form_data.subject1 == subject %}selected{% endif %}>{{ subject }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <select name="subject2" id="subject2" class="form-control" data-validate="required" required>
+                            <option value="">-- Select Subject 2 --</option>
+                            {% for subject in subjects_list %}
+                                {% if subject != 'English Language' %}
+                                    <option value="{{ subject }}" {% if form_data and form_data.subject2 == subject %}selected{% endif %}>{{ subject }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <select name="subject3" id="subject3" class="form-control" data-validate="required" required>
+                            <option value="">-- Select Subject 3 --</option>
+                            {% for subject in subjects_list %}
+                                {% if subject != 'English Language' %}
+                                    <option value="{{ subject }}" {% if form_data and form_data.subject3 == subject %}selected{% endif %}>{{ subject }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-check" style="margin-bottom: 1.5rem;">
+                    <input type="checkbox" class="form-check-input" id="terms" name="terms" data-validate="required" required>
+                    <label for="terms" class="form-check-label">
+                        I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Create Account →</button>
+            </form>
+            
+            <div class="login-link">
+                <p style="margin-bottom: 0.5rem;">Already have an account?</p>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-gold btn-block">Login to Your Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Prevent selecting the same subject multiple times
+    document.addEventListener('DOMContentLoaded', function() {
+        const subject1 = document.getElementById('subject1');
+        const subject2 = document.getElementById('subject2');
+        const subject3 = document.getElementById('subject3');
+        
+        function updateOptions() {
+            const selectedValues = [subject1.value, subject2.value, subject3.value].filter(v => v);
+            
+            [subject1, subject2, subject3].forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value && option.value !== currentValue) {
+                        option.disabled = selectedValues.includes(option.value);
+                    }
+                });
+            });
+        }
+        
+        subject1.addEventListener('change', updateOptions);
+        subject2.addEventListener('change', updateOptions);
+        subject3.addEventListener('change', updateOptions);
+        
+        updateOptions();
+    });
+</script>
+{% endblock %}

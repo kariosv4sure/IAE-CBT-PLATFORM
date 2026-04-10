@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block page_title %}Privacy Policy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .privacy-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .privacy-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+    }
+    
+    .last-updated {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .policy-section {
+        margin-bottom: 2rem;
+    }
+    
+    .policy-section h3 {
+        color: var(--accent-gold);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+    
+    .policy-section p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+    
+    .policy-section ul {
+        list-style: disc;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .policy-section li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .highlight-box {
+        background: rgba(201, 160, 61, 0.1);
+        border-left: 3px solid var(--accent-gold);
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="privacy-container">
+    <div class="privacy-card">
+        <h2 style="margin-bottom: 0.5rem;">Privacy Policy</h2>
+        <div class="last-updated">Last Updated: April 10, 2026</div>
+        
+        <div class="highlight-box">
+            <p style="margin-bottom: 0;"><strong>Your Privacy Matters:</strong> At IAE Tutorials, we are committed to protecting your personal information and being transparent about how we use it.</p>
+        </div>
+        
+        <div class="policy-section">
+            <h3>1. Information We Collect</h3>
+            <p>When you register for IAE Tutorials, we collect:</p>
+            <ul>
+                <li>Full name and username</li>
+                <li>Email address</li>
+                <li>Selected JAMB subjects</li>
+                <li>Exam performance data (scores, answers)</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section">
+            <h3>2. How We Use Your Information</h3>
+            <p>Your information is used exclusively for:</p>
+            <ul>
+                <li>Providing and improving our CBT platform</li>
+                <li>Tracking your exam progress and generating results</li>
+                <li>Displaying your scores on the leaderboard (with your consent)</li>
+                <li>Communicating important platform updates</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section">
+            <h3>3. Data Security</h3>
+            <p>We implement industry-standard security measures including:</p>
+            <ul>
+                <li>Password hashing using Werkzeug security</li>
+                <li>Secure session management</li>
+                <li>HTTPS encryption for all data transmission</li>
+                <li>Regular security updates</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section">
+            <h3>4. Data Sharing</h3>
+            <p>We do not sell, trade, or rent your personal information to third parties. Your data is only accessible to:</p>
+            <ul>
+                <li>You (through your account dashboard)</li>
+                <li>Platform administrators (for support purposes)</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section">
+            <h3>5. Cookies</h3>
+            <p>We use essential session cookies to keep you logged in and maintain your exam progress. No tracking or advertising cookies are used.</p>
+        </div>
+        
+        <div class="policy-section">
+            <h3>6. Your Rights</h3>
+            <p>You have the right to:</p>
+            <ul>
+                <li>Access your personal data</li>
+                <li>Request correction of inaccurate data</li>
+                <li>Request deletion of your account</li>
+                <li>Opt-out of leaderboard display</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section">
+            <h3>7. Contact Us</h3>
+            <p>For privacy-related questions, contact us at <a href="mailto:privacy@iaetutorials.com">privacy@iaetutorials.com</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block page_title %}Account Settings{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .settings-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .settings-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .toggle-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .toggle-item:last-child {
+        border-bottom: none;
+    }
+    
+    .toggle-label {
+        font-weight: 500;
+    }
+    
+    .toggle-desc {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        width: 50px;
+        height: 26px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+    }
+    
+    .toggle-switch.active {
+        background: var(--accent-gold);
+        border-color: var(--accent-gold);
+    }
+    
+    .toggle-slider {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: var(--radius-full);
+        transition: transform var(--transition-fast);
+    }
+    
+    .toggle-switch.active .toggle-slider {
+        transform: translateX(24px);
+    }
+    
+    .danger-zone {
+        border-color: var(--danger);
+    }
+    
+    .danger-zone .settings-title {
+        color: var(--danger);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-card">
+        <h3 class="settings-title">
+            <span>🔔</span>
+            <span>Notifications</span>
+        </h3>
+        
+        <div class="toggle-item">
+            <div>
+                <div class="toggle-label">Email Notifications</div>
+                <div class="toggle-desc">Receive updates about your account and exam results</div>
+            </div>
+            <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        
+        <div class="toggle-item">
+            <div>
+                <div class="toggle-label">Leaderboard Visibility</div>
+                <div class="toggle-desc">Show your score on the public leaderboard</div>
+            </div>
+            <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="settings-card">
+        <h3 class="settings-title">
+            <span>🔐</span>
+            <span>Change Password</span>
+        </h3>
+        
+        <form>
+            <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <input type="password" class="form-control" placeholder="Enter current password">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" class="form-control" placeholder="Enter new password">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" class="form-control" placeholder="Confirm new password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Update Password</button>
+        </form>
+    </div>
+    
+    <div class="settings-card">
+        <h3 class="settings-title">
+            <span>🎨</span>
+            <span>Appearance</span>
+        </h3>
+        
+        <div class="toggle-item">
+            <div>
+                <div class="toggle-label">Dark Mode</div>
+                <div class="toggle-desc">Use dark theme (always enabled on this platform)</div>
+            </div>
+            <div class="toggle-switch active">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="settings-card danger-zone">
+        <h3 class="settings-title">
+            <span>⚠️</span>
+            <span>Danger Zone</span>
+        </h3>
+        
+        <div style="margin-bottom: 1rem;">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Once you delete your account, there is no going back. Please be certain.</p>
+            <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="alert('Please contact support to delete your account.')">
+                Delete Account
+            </button>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 1rem;">
+        <a href="{{ url_for('profile') }}" class="btn btn-outline">← Back to Profile</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block page_title %}404 Error{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-container {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    .error-card {
+        max-width: 500px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .error-code {
+        font-size: 6rem;
+        font-weight: 800;
+        color: var(--accent-gold);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 30px rgba(201, 160, 61, 0.3);
+    }
+    
+    .error-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .error-message {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .error-illustration {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.8;
+    }
+    
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .help-links {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .help-links p {
+        margin-bottom: 0.75rem;
+        color: var(--text-muted);
+    }
+    
+    .help-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        margin: 0 0.5rem;
+        transition: color var(--transition-fast);
+    }
+    
+    .help-links a:hover {
+        color: var(--accent-gold);
+    }
+    
+    @media (max-width: 480px) {
+        .error-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .error-code {
+            font-size: 4rem;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+        }
+        
+        .error-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-illustration">🔍</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-message">
+            Oops! The page you're looking for doesn't exist or has been moved.
+        </p>
+        
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                ← Back to Home
+            </a>
+            {% if current_user and current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                    Go to Dashboard
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="help-links">
+            <p>Maybe you were looking for:</p>
+            <div>
+                <a href="{{ url_for('index') }}">Home</a> •
+                <a href="{{ url_for('login') }}">Login</a> •
+                <a href="{{ url_for('register') }}">Register</a> •
+                <a href="{{ url_for('leaderboard') }}">Leaderboard</a> •
+                <a href="{{ url_for('contact') }}">Contact</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

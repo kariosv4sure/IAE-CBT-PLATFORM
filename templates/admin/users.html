@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block page_title %}User Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .users-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .users-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .search-box {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .search-input {
+        padding: 0.6rem 1rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        min-width: 250px;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+    }
+    
+    .users-table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        overflow-x: auto;
+    }
+    
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .users-table th {
+        padding: 1rem;
+        text-align: left;
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border-color);
+        white-space: nowrap;
+    }
+    
+    .users-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+    
+    .users-table tbody tr:hover {
+        background: var(--bg-hover);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-vip {
+        background: rgba(40, 167, 69, 0.2);
+        color: var(--success);
+        border: 1px solid var(--success);
+    }
+    
+    .status-pending {
+        background: rgba(255, 193, 7, 0.2);
+        color: var(--warning);
+        border: 1px solid var(--warning);
+    }
+    
+    .exam-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .exam-taken {
+        background: rgba(23, 162, 184, 0.2);
+        color: var(--info);
+    }
+    
+    .exam-not-taken {
+        background: var(--bg-surface);
+        color: var(--text-muted);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        padding: 0.35rem 0.75rem;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .action-btn:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+    }
+    
+    .action-btn.approve {
+        border-color: var(--success);
+        color: var(--success);
+    }
+    
+    .action-btn.approve:hover {
+        background: rgba(40, 167, 69, 0.1);
+    }
+    
+    .action-btn.revoke {
+        border-color: var(--warning);
+        color: var(--warning);
+    }
+    
+    .action-btn.revoke:hover {
+        background: rgba(255, 193, 7, 0.1);
+    }
+    
+    .action-btn.reset {
+        border-color: var(--danger);
+        color: var(--danger);
+    }
+    
+    .action-btn.reset:hover {
+        background: rgba(220, 53, 69, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .users-container {
+            padding: 1rem;
+        }
+        
+        .users-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-input {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="users-container">
+    <div class="users-header">
+        <h2 style="margin-bottom: 0;">All Users ({{ users|length }})</h2>
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
+            <button class="btn btn-outline" onclick="filterTable()">🔍 Search</button>
+        </div>
+    </div>
+    
+    <div class="users-table-container">
+        <table class="users-table" id="usersTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Subjects</th>
+                    <th>VIP Status</th>
+                    <th>Exam Status</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td>{{ user.full_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.get_chosen_subjects()|join(', ') }}</td>
+                    <td>
+                        {% if user.is_vip %}
+                            <span class="status-badge status-vip">VIP</span>
+                        {% else %}
+                            <span class="status-badge status-pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.has_taken_exam %}
+                            <span class="exam-status exam-taken">Completed</span>
+                        {% else %}
+                            <span class="exam-status exam-not-taken">Not Taken</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            {% if not user.is_vip %}
+                                <a href="{{ url_for('make_vip', user_id=user.id) }}" 
+                                   class="action-btn approve" 
+                                   onclick="return confirm('Approve VIP access for {{ user.full_name }}?')">
+                                    ✅ Approve
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('remove_vip', user_id=user.id) }}" 
+                                   class="action-btn revoke"
+                                   onclick="return confirm('Revoke VIP access from {{ user.full_name }}?')">
+                                    ⭐ Revoke
+                                </a>
+                            {% endif %}
+                            
+                            {% if user.has_taken_exam %}
+                                <a href="{{ url_for('reset_exam', user_id=user.id) }}" 
+                                   class="action-btn reset"
+                                   onclick="return confirm('Reset exam for {{ user.full_name }}? This action cannot be undone.')">
+                                    🔄 Reset
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('usersTable');
+        const rows = table.getElementsByTagName('tr');
+        
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+            
+            for (let j = 0; j < cells.length - 1; j++) {
+                const cell = cells[j];
+                if (cell) {
+                    const text = cell.textContent || cell.innerText;
+                    if (text.toLowerCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            row.style.display = found ? '' : 'none';
+        }
+    }
+    
+    // Enter key search
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            filterTable();
+        }
+    });
+</script>
+{% endblock %}

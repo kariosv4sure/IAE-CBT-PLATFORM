@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block page_title %}500 Error{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-container {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    .error-card {
+        max-width: 500px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .error-code {
+        font-size: 6rem;
+        font-weight: 800;
+        color: var(--danger);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 30px rgba(220, 53, 69, 0.3);
+    }
+    
+    .error-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .error-message {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .error-illustration {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.8;
+    }
+    
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .error-note {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(220, 53, 69, 0.1);
+        border-radius: var(--radius-md);
+        border-left: 3px solid var(--danger);
+        text-align: left;
+    }
+    
+    .error-note p {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+    
+    .error-note strong {
+        color: var(--danger);
+    }
+    
+    @media (max-width: 480px) {
+        .error-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .error-code {
+            font-size: 4rem;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+        }
+        
+        .error-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-illustration">⚠️</div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Server Error</h1>
+        <p class="error-message">
+            Something went wrong on our end. Please try again.
+        </p>
+        
+        <div class="error-actions">
+            <button onclick="location.reload()" class="btn btn-primary">
+                🔄 Try Again
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-outline">
+                ← Back to Home
+            </a>
+        </div>
+        
+        <div class="error-note">
+            <p>
+                <strong>⏱️ This is temporary</strong><br>
+                If the problem persists, please contact {{ founder_name }} on WhatsApp: 
+                <a href="https://wa.me/{{ founder_whatsapp }}" style="color: var(--accent-gold);">{{ founder_phone }}</a>
+                {% if current_user and current_user.is_authenticated %}
+                    <br><br>
+                    <a href="{{ url_for('dashboard') }}" style="color: var(--accent-gold);">
+                        Return to Dashboard →
+                    </a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

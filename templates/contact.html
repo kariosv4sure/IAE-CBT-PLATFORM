@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block page_title %}Contact IAE Tutorials{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-container {
+        max-width: 1100px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .info-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        height: fit-content;
+    }
+    
+    .info-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent-gold);
+    }
+    
+    .contact-method {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .contact-method:last-child {
+        border-bottom: none;
+    }
+    
+    .method-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(201, 160, 61, 0.1);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    .method-content h4 {
+        margin-bottom: 0.25rem;
+    }
+    
+    .method-content p {
+        color: var(--text-secondary);
+        margin-bottom: 0;
+    }
+    
+    .whatsapp-highlight {
+        background: rgba(37, 211, 102, 0.1);
+        border: 1px solid #25d366;
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+    
+    .whatsapp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #25d366;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-full);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all var(--transition-fast);
+        margin-top: 1rem;
+    }
+    
+    .whatsapp-btn:hover {
+        background: #20ba5a;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+    }
+    
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .faq-section {
+        margin: 3rem 0;
+    }
+    
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .faq-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+    }
+    
+    .faq-question {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--accent-gold);
+    }
+    
+    .faq-answer {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .response-time {
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <div class="contact-grid">
+        <div class="info-card">
+            <h3 class="info-title">📞 Get in Touch</h3>
+            
+            <div class="contact-method">
+                <div class="method-icon">📧</div>
+                <div class="method-content">
+                    <h4>Email</h4>
+                    <p>mosesdanielfiyinfoluwa08@gmail.com</p>
+                    <p style="font-size: 0.85rem;">Response within 2-4 hours</p>
+                </div>
+            </div>
+            
+            <div class="contact-method">
+                <div class="method-icon">📞</div>
+                <div class="method-content">
+                    <h4>Phone / WhatsApp</h4>
+                    <p>07079396111</p>
+                    <p style="font-size: 0.85rem;">Available 9am - 9pm WAT</p>
+                </div>
+            </div>
+            
+            <div class="contact-method">
+                <div class="method-icon">📍</div>
+                <div class="method-content">
+                    <h4>Location</h4>
+                    <p>Lagos, Nigeria</p>
+                    <p style="font-size: 0.85rem;">Remote / Online Only</p>
+                </div>
+            </div>
+            
+            <div class="whatsapp-highlight">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💬</div>
+                <h4 style="margin-bottom: 0.5rem;">Fastest Response on WhatsApp</h4>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Click below to chat directly with Moses Daniel on WhatsApp</p>
+                <a href="https://wa.me/2347079396111" target="_blank" class="whatsapp-btn">
+                    💬 Chat on WhatsApp
+                </a>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">+234 707 939 6111</p>
+            </div>
+            
+            <div class="response-time">
+                <p style="margin-bottom: 0;">
+                    <strong>⏰ Typical Response Time:</strong><br>
+                    WhatsApp: 5-15 minutes<br>
+                    Email: 2-4 hours
+                </p>
+            </div>
+        </div>
+        
+        <div class="form-card">
+            <h3 class="form-title">Send a Message</h3>
+            <p class="form-subtitle">I'll get back to you as soon as possible.</p>
+            
+            <form action="mailto:mosesdanielfiyinfoluwa08@gmail.com" method="POST" enctype="text/plain">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Your Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <select name="subject" class="form-control">
+                        <option>General Inquiry</option>
+                        <option>Technical Support</option>
+                        <option>VIP Activation Help</option>
+                        <option>Feature Request</option>
+                        <option>Report a Bug</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea name="message" class="form-control" rows="5" placeholder="How can I help you?" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Send Message →</button>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 1rem;">
+                    Or email directly: mosesdanielfiyinfoluwa08@gmail.com
+                </p>
+            </form>
+        </div>
+    </div>
+    
+    <div class="faq-section">
+        <h2 style="text-align: center; margin-bottom: 0.5rem;">Frequently Asked Questions</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">Quick answers to common questions</p>
+        
+        <div class="faq-grid">
+            <div class="faq-card">
+                <div class="faq-question">❓ How do I get VIP access?</div>
+                <div class="faq-answer">Register an account and send a WhatsApp message to 07079396111. I'll activate your VIP status within minutes!</div>
+            </div>
+            <div class="faq-card">
+                <div class="faq-question">❓ Is this platform free?</div>
+                <div class="faq-answer">Registration is free. VIP access is granted manually to ensure quality service. Contact me for details.</div>
+            </div>
+            <div class="faq-card">
+                <div class="faq-question">❓ Who built this platform?</div>
+                <div class="faq-answer">IAE Tutorials was built entirely by Moses Daniel, a passionate developer dedicated to helping Nigerian students.</div>
+            </div>
+            <div class="faq-card">
+                <div class="faq-question">❓ Can I suggest features?</div>
+                <div class="faq-answer">Absolutely! I'm always improving the platform. Send your suggestions via WhatsApp or email.</div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; padding: 2rem; background: var(--bg-surface); border-radius: var(--radius-lg);">
+        <h3 style="margin-bottom: 0.5rem;">Built with ❤️ by Moses Daniel</h3>
+        <p style="color: var(--text-secondary);">One developer. One vision. Better education for Nigeria.</p>
+        <p style="margin-top: 1rem;">
+            <a href="https://wa.me/2347079396111" target="_blank" style="color: var(--accent-gold);">💬 Chat on WhatsApp: 07079396111</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

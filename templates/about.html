@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block page_title %}About IAE Tutorials{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .about-hero {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(201, 160, 61, 0.08) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    
+    .about-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--accent-gold), #f0d06b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .about-hero p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .mission-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .mission-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: var(--accent-gold);
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+    
+    .feature-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-align: center;
+        transition: all var(--transition-base);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent-gold);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .stats-section {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+    
+    .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--accent-gold);
+        line-height: 1;
+    }
+    
+    .stat-label {
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+    
+    .founder-section {
+        margin: 3rem 0;
+        text-align: center;
+    }
+    
+    .founder-card {
+        max-width: 400px;
+        margin: 2rem auto;
+        background: var(--bg-card);
+        border: 2px solid var(--accent-gold);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(201, 160, 61, 0.1);
+    }
+    
+    .founder-avatar {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 700;
+        color: var(--bg-primary);
+        box-shadow: 0 0 30px rgba(201, 160, 61, 0.3);
+    }
+    
+    .founder-name {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .founder-title {
+        color: var(--accent-gold);
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .founder-bio {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+    }
+    
+    .founder-quote {
+        font-style: italic;
+        color: var(--text-primary);
+        padding: 1rem;
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        border-left: 3px solid var(--accent-gold);
+    }
+    
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .stats-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .founder-name {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-hero">
+        <h1>Empowering JAMB Success</h1>
+        <p>IAE Tutorials is a solo-built CBT practice platform, created to help Nigerian students achieve their dream JAMB scores.</p>
+    </div>
+    
+    <div class="mission-card">
+        <h2 class="mission-title">🎯 Our Mission</h2>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-primary);">
+            To provide accessible, high-quality JAMB preparation that mirrors the real exam experience. 
+            Built by a student, for students - IAE Tutorials believes every Nigerian student deserves 
+            the opportunity to practice in a realistic CBT environment before their actual examination day.
+        </p>
+    </div>
+    
+    <h2 style="text-align: center; margin-bottom: 2rem;">Why Choose IAE Tutorials?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3 class="feature-title">Real Exam Simulation</h3>
+            <p>180 questions with exact JAMB format - 60 English + 3 electives of 40 questions each.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⏱️</div>
+            <h3 class="feature-title">Timed Practice</h3>
+            <p>2-hour countdown timer just like the actual UTME examination.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3 class="feature-title">25+ Subjects</h3>
+            <p>Comprehensive coverage of all JAMB subjects with detailed explanations.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3 class="feature-title">AI-Powered Explanations</h3>
+            <p>Get instant, detailed explanations for every question you attempt.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3 class="feature-title">Detailed Analytics</h3>
+            <p>Track your performance by subject and identify areas for improvement.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3 class="feature-title">Mobile Friendly</h3>
+            <p>Practice anywhere, anytime on any device with our responsive design.</p>
+        </div>
+    </div>
+    
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Active Students</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">25+</div>
+            <div class="stat-label">Subjects Covered</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">5,000+</div>
+            <div class="stat-label">Questions Bank</div>
+        </div>
+    </div>
+    
+    <div class="founder-section">
+        <h2 style="text-align: center; margin-bottom: 1rem;">Meet the Founder</h2>
+        <p style="text-align: center; color: var(--text-secondary);">One developer. One vision. Quality education for all.</p>
+        
+        <div class="founder-card">
+            <div class="founder-avatar">MD</div>
+            <div class="founder-name">Moses Daniel</div>
+            <div class="founder-title">Founder & Lead Developer</div>
+            <div class="founder-bio">
+                Full-stack developer passionate about education technology. 
+                Built IAE Tutorials from scratch to help fellow Nigerian students 
+                prepare effectively for JAMB.
+            </div>
+            <div class="founder-quote">
+                "Education is the passport to the future. I built this platform so 
+                every student can walk into their JAMB exam with confidence."
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: var(--bg-surface); border-radius: var(--radius-lg);">
+        <h3 style="margin-bottom: 1rem;">Ready to Start Your Journey?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Join hundreds of students preparing for JAMB 2026 with IAE Tutorials.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started Now →</a>
+    </div>
+</div>
+{% endblock %}

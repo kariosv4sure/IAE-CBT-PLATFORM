@@ -1,0 +1,92 @@
+.env
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+
+# Flask
+instance/
+.webassets-cache
+.env
+.venv
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# PostgreSQL local
+postgresql/
+pgdata/
+*.pem
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+error_log/
+access_log/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Deployment
+*.pid
+*.seed
+*.pid.lock
+
+# Uploads
+uploads/
+media/
+static/uploads/
+
+# Backups
+*.bak
+*.backup
+*.old
+
+# Secrets
+*.pem
+*.key
+*.crt
+secrets.json
+config_secret.py
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Project specific
+data/questions/*.csv
+data/questions/*.xlsx
+temp/
+tmp/

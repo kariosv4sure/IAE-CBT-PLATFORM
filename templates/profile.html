@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--bg-primary);
+        flex-shrink: 0;
+    }
+    
+    .profile-info h2 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-info p {
+        color: var(--text-secondary);
+        margin-bottom: 0;
+    }
+    
+    .vip-badge {
+        display: inline-block;
+        background: var(--success);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-left: 0.5rem;
+    }
+    
+    .vip-badge.pending {
+        background: var(--warning);
+        color: var(--bg-primary);
+    }
+    
+    .detail-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .detail-title {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent-gold);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .detail-row {
+        display: flex;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        width: 150px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    
+    .detail-value {
+        flex: 1;
+        color: var(--text-primary);
+    }
+    
+    .subjects-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .subject-tag {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-full);
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .subject-tag.compulsory {
+        background: rgba(201, 160, 61, 0.15);
+        border-color: var(--accent-gold);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .detail-row {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .detail-label {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ current_user.full_name[0].upper() }}
+        </div>
+        <div class="profile-info">
+            <h2>
+                {{ current_user.full_name }}
+                {% if current_user.is_vip %}
+                    <span class="vip-badge">VIP</span>
+                {% else %}
+                    <span class="vip-badge pending">Pending</span>
+                {% endif %}
+            </h2>
+            <p>@{{ current_user.username }}</p>
+            <p>Member since {{ current_user.created_at.strftime('%B %d, %Y') }}</p>
+        </div>
+    </div>
+    
+    <div class="detail-card">
+        <h3 class="detail-title">
+            <span>👤</span>
+            <span>Account Information</span>
+        </h3>
+        <div class="detail-row">
+            <div class="detail-label">Username</div>
+            <div class="detail-value">{{ current_user.username }}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Email Address</div>
+            <div class="detail-value">{{ current_user.email }}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Full Name</div>
+            <div class="detail-value">{{ current_user.full_name }}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label">Account Status</div>
+            <div class="detail-value">
+                {% if current_user.is_vip %}
+                    <span style="color: var(--success);">✅ VIP Activated</span>
+                {% else %}
+                    <span style="color: var(--warning);">⏳ Pending Activation</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="detail-card">
+        <h3 class="detail-title">
+            <span>📚</span>
+            <span>Registered Subjects</span>
+        </h3>
+        <div class="subjects-list">
+            <span class="subject-tag compulsory">📖 English Language (Compulsory - 60 Qs)</span>
+            {% for subject in current_user.get_chosen_subjects() %}
+                <span class="subject-tag">{{ subject }} (40 Qs)</span>
+            {% endfor %}
+        </div>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+            Total exam: 180 questions (60 English + 3 × 40 electives)
+        </p>
+    </div>
+    
+    <div class="detail-card">
+        <h3 class="detail-title">
+            <span>📊</span>
+            <span>Exam Status</span>
+        </h3>
+        <div class="detail-row">
+            <div class="detail-label">Exam Taken</div>
+            <div class="detail-value">
+                {% if current_user.has_taken_exam %}
+                    <span style="color: var(--success);">✅ Completed</span>
+                {% else %}
+                    <span style="color: var(--text-secondary);">⏳ Not Yet Taken</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if current_user.has_taken_exam %}
+            {% set latest_session = current_user.exam_sessions|selectattr('submitted_at')|list|last %}
+            {% if latest_session %}
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">{{ latest_session.score }}/180</div>
+                    <div class="stat-label">Latest Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ ((latest_session.score / 180) * 100)|round(1) }}%</div>
+                    <div class="stat-label">Percentage</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ latest_session.submitted_at.strftime('%b %d') }}</div>
+                    <div class="stat-label">Date Taken</div>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">← Back to Dashboard</a>
+        <a href="{{ url_for('result') }}" class="btn btn-primary">View Full Results →</a>
+    </div>
+</div>
+{% endblock %}
