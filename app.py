@@ -464,7 +464,7 @@ def resume_exam():
         questions = get_questions_for_user(user)
         session['exam_questions'] = [q.id for q in questions]
 
-    elapsed = (datetime.now(timezone.utc) - exam_session.started_at).total_seconds()
+    elapsed = (datetime.now(timezone.utc) - exam_session.started_at.replace(tzinfo=timezone.utc)).total_seconds()
     remaining = max(0, 7200 - int(elapsed))
 
     if remaining == 0:
