@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Exam Results{% endblock %}
+{% block title %}Exam Results | IAE CBT Admin{% endblock %}
 
-{% block page_title %}Student Results{% endblock %}
+{% block page_title %}📊 Exam Results Dashboard{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -11,227 +11,258 @@
         max-width: 1400px;
         margin: 0 auto;
     }
-    
-    .results-summary {
+
+    .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
         margin-bottom: 2rem;
     }
-    
-    .summary-card {
-        background: var(--bg-card);
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
         border: 1px solid var(--border-color);
         border-radius: var(--radius-lg);
         padding: 1.25rem;
         text-align: center;
+        transition: transform var(--transition-fast);
     }
-    
-    .summary-label {
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+
+    .stat-card:hover { transform: translateY(-3px); }
+
+    .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--accent-gold); }
+    .stat-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
-    
-    .summary-value {
-        font-size: 2rem;
-        font-weight: 700;
+
+    .export-btn {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 0.5rem 1rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        text-decoration: none;
+    }
+
+    .export-btn:hover {
+        border-color: var(--accent-gold);
         color: var(--accent-gold);
     }
-    
+
     .results-table-container {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-lg);
         overflow-x: auto;
     }
-    
+
     .results-table {
         width: 100%;
         border-collapse: collapse;
     }
-    
+
     .results-table th {
         padding: 1rem;
         text-align: left;
         background: var(--bg-surface);
         color: var(--text-primary);
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid var(--border-color);
         cursor: pointer;
         white-space: nowrap;
     }
-    
-    .results-table th:hover {
-        background: var(--bg-hover);
-    }
-    
+
+    .results-table th:hover { background: var(--bg-hover); }
+
     .results-table td {
         padding: 1rem;
         border-bottom: 1px solid var(--border-color);
         color: var(--text-secondary);
-        white-space: nowrap;
+        vertical-align: middle;
     }
-    
-    .results-table tbody tr:hover {
-        background: var(--bg-hover);
-    }
-    
-    .score-cell {
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
-    
-    .score-excellent {
-        color: var(--success);
-    }
-    
-    .score-good {
-        color: var(--accent-gold);
-    }
-    
-    .score-average {
-        color: var(--warning);
-    }
-    
-    .score-poor {
-        color: var(--danger);
-    }
-    
+
+    .results-table tbody tr:hover { background: var(--bg-hover); }
+
     .rank-badge {
-        display: inline-block;
-        width: 28px;
-        height: 28px;
-        background: var(--bg-surface);
-        border-radius: var(--radius-full);
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--bg-surface);
+        border-radius: var(--radius-full);
         font-weight: 700;
         font-size: 0.85rem;
     }
-    
-    .rank-1 {
-        background: linear-gradient(135deg, #ffd700, #ffed4a);
-        color: #000;
+
+    .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4a); color: #000; }
+    .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color: #000; }
+    .rank-3 { background: linear-gradient(135deg, #cd7f32, #daa06d); color: #000; }
+
+    .score-badge {
+        font-weight: 700;
+        font-size: 1rem;
     }
-    
-    .rank-2 {
-        background: linear-gradient(135deg, #c0c0c0, #e0e0e0);
-        color: #000;
+    .score-excellent { color: var(--success); }
+    .score-good { color: var(--accent-gold); }
+    .score-average { color: var(--warning); }
+    .score-poor { color: var(--danger); }
+
+    .progress-bar {
+        width: 80px;
+        height: 6px;
+        background: var(--bg-primary);
+        border-radius: var(--radius-full);
+        overflow: hidden;
     }
-    
-    .rank-3 {
-        background: linear-gradient(135deg, #cd7f32, #daa06d);
-        color: #000;
-    }
-    
-    .view-link {
+    .progress-fill { height: 100%; border-radius: var(--radius-full); }
+
+    .view-detail {
         color: var(--accent-gold);
         text-decoration: none;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         cursor: pointer;
     }
-    
-    .view-link:hover {
-        text-decoration: underline;
+    .view-detail:hover { text-decoration: underline; }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
     }
-    
+    .page-btn {
+        padding: 0.4rem 0.8rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        cursor: pointer;
+    }
+    .page-btn.active {
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        border-color: var(--accent-gold);
+    }
+
     @media (max-width: 768px) {
-        .results-container {
-            padding: 1rem;
-        }
+        .results-container { padding: 1rem; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="results-container">
-    <!-- Summary Cards -->
-    <div class="results-summary">
-        <div class="summary-card">
-            <div class="summary-label">Total Results</div>
-            <div class="summary-value">{{ results|length }}</div>
+    <!-- Stats Summary -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">{{ results|length }}</div>
+            <div class="stat-label">Total Exams Taken</div>
         </div>
-        <div class="summary-card">
-            <div class="summary-label">Average Score</div>
-            <div class="summary-value">
-                {% set total_score = results|sum(attribute='ExamSession.score') %}
-                {% set avg = (total_score / results|length) | round(1) if results|length > 0 else 0 %}
-                {{ avg }}
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">
+                {% set avg = (results|sum(attribute='session.score') / results|length * 100 / 180) | round(1) if results|length > 0 else 0 %}
+                {{ avg }}%
             </div>
+            <div class="stat-label">Average Score</div>
         </div>
-        <div class="summary-card">
-            <div class="summary-label">Highest Score</div>
-            <div class="summary-value">
-                {% if results %}
-                    {{ results[0].ExamSession.score }}
-                {% else %}
-                    0
-                {% endif %}
+        <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value">
+                {% if results %}{{ results[0].session.score }}{% else %}0{% endif %}/180
             </div>
+            <div class="stat-label">Highest Score</div>
         </div>
-        <div class="summary-card">
-            <div class="summary-label">Pass Rate (50%+)</div>
-            <div class="summary-value">
-                {% set passed = results|selectattr('ExamSession.score', 'ge', 90)|list|length %}
+        <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">
+                {% set passed = results|selectattr('session.score', 'ge', 90)|list|length %}
                 {{ ((passed / results|length * 100) | round(1)) if results|length > 0 else 0 }}%
             </div>
+            <div class="stat-label">Pass Rate (50%+)</div>
         </div>
     </div>
-    
-    <!-- Results Table -->
+
+    <div class="section-header">
+        <h2 style="margin-bottom: 0;">All Exam Results</h2>
+        <a href="{{ url_for('export_results') }}" class="export-btn">📥 Export to CSV</a>
+    </div>
+
     <div class="results-table-container">
         <table class="results-table" id="resultsTable">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th onclick="sortTable(1)">Username ↕</th>
-                    <th onclick="sortTable(2)">Full Name ↕</th>
-                    <th onclick="sortTable(3)">Subjects ↕</th>
-                    <th onclick="sortTable(4)">Score ↕</th>
-                    <th onclick="sortTable(5)">Percentage ↕</th>
-                    <th onclick="sortTable(6)">Date ↕</th>
-                    <th>Details</th>
+                    <th>Student</th>
+                    <th>Subjects</th>
+                    <th>Score</th>
+                    <th>JAMB Scale</th>
+                    <th>Performance</th>
+                    <th>Date Taken</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for user, session in results %}
-                {% set percentage = (session.score / 180 * 100) | round(1) %}
+                {% for item in results %}
+                {% set percentage = (item.session.score / item.session.total_questions * 100) | round(1) %}
+                {% set jamb_score = ((item.session.score / item.session.total_questions) * 400) | round(0) %}
                 <tr>
                     <td>
                         <span class="rank-badge {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
                             {{ loop.index }}
                         </span>
                     </td>
-                    <td><strong>{{ user.username }}</strong></td>
-                    <td>{{ user.full_name }}</td>
-                    <td>{{ user.get_chosen_subjects()[:2]|join(', ') }}...</td>
-                    <td class="score-cell">
-                        <span class="
+                    <td>
+                        <div>
+                            <strong style="color: var(--text-primary);">{{ item.user.full_name }}</strong><br>
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">@{{ item.user.username }}</span>
+                        </div>
+                    </td>
+                    <td style="font-size: 0.75rem;">{{ item.user.get_chosen_subjects()|join(', ') }}</td>
+                    <td>
+                        <span class="score-badge 
                             {% if percentage >= 80 %}score-excellent
                             {% elif percentage >= 60 %}score-good
                             {% elif percentage >= 40 %}score-average
-                            {% else %}score-poor{% endif %}
-                        ">
-                            {{ session.score }}/180
+                            {% else %}score-poor{% endif %}">
+                            {{ item.session.score }}/{{ item.session.total_questions }}
                         </span>
                     </td>
                     <td>
+                        <span class="score-badge">{{ jamb_score }}/400</span>
+                    </td>
+                    <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <div style="width: 50px; height: 6px; background: var(--bg-primary); border-radius: var(--radius-full); overflow: hidden;">
-                                <div style="width: {{ percentage }}%; height: 100%; background: {% if percentage >= 80 %}#28a745{% elif percentage >= 60 %}#c9a03d{% elif percentage >= 40 %}#ffc107{% else %}#dc3545{% endif %};"></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ percentage }}%; background: 
+                                    {% if percentage >= 80 %}#28a745
+                                    {% elif percentage >= 60 %}#c9a03d
+                                    {% elif percentage >= 40 %}#ffc107
+                                    {% else %}#dc3545{% endif %};">
+                                </div>
                             </div>
-                            <span>{{ percentage }}%</span>
+                            <span style="font-size: 0.8rem;">{{ percentage }}%</span>
                         </div>
                     </td>
-                    <td>{{ session.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td style="font-size: 0.75rem;">{{ item.session.submitted_at.strftime('%d/%m/%y %H:%M') }}</td>
                     <td>
-                        <span class="view-link" onclick="alert('Detailed results for {{ user.full_name }}')">View →</span>
+                        <a href="{{ url_for('admin_user_detail', user_id=item.user.id) }}" class="view-detail">View Details →</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -241,41 +272,40 @@
 </div>
 
 <script>
-    function sortTable(columnIndex) {
-        const table = document.getElementById('resultsTable');
-        const tbody = table.getElementsByTagName('tbody')[0];
-        const rows = Array.from(tbody.getElementsByTagName('tr'));
-        
-        const isAscending = table.dataset.sortColumn == columnIndex && table.dataset.sortOrder === 'asc';
-        
-        rows.sort((a, b) => {
-            let aValue = a.getElementsByTagName('td')[columnIndex].textContent.trim();
-            let bValue = b.getElementsByTagName('td')[columnIndex].textContent.trim();
-            
-            // Handle numeric sorting for score column
-            if (columnIndex === 4) {
-                aValue = parseInt(aValue.split('/')[0]);
-                bValue = parseInt(bValue.split('/')[0]);
-                return isAscending ? aValue - bValue : bValue - aValue;
-            }
-            
-            // Handle percentage sorting
-            if (columnIndex === 5) {
-                aValue = parseFloat(aValue);
-                bValue = parseFloat(bValue);
-                return isAscending ? aValue - bValue : bValue - aValue;
-            }
-            
-            // Default string comparison
-            return isAscending 
-                ? bValue.localeCompare(aValue) 
-                : aValue.localeCompare(bValue);
-        });
-        
-        rows.forEach(row => tbody.appendChild(row));
-        
-        table.dataset.sortColumn = columnIndex;
-        table.dataset.sortOrder = isAscending ? 'desc' : 'asc';
-    }
+    // Sorting functionality
+    const getCellValue = (row, index) => {
+        const cell = row.cells[index];
+        if (index === 3) return parseInt(cell.innerText.split('/')[0]);
+        if (index === 4) return parseInt(cell.innerText.split('/')[0]);
+        if (index === 5) return parseFloat(cell.innerText);
+        return cell.innerText;
+    };
+
+    document.querySelectorAll('th').forEach((th, idx) => {
+        if (idx >= 1 && idx <= 5) {
+            th.addEventListener('click', () => {
+                const table = document.getElementById('resultsTable');
+                const tbody = table.tBodies[0];
+                const rows = Array.from(tbody.rows);
+                const ascending = th.dataset.sort === 'asc';
+                
+                rows.sort((a, b) => {
+                    const aVal = getCellValue(a, idx);
+                    const bVal = getCellValue(b, idx);
+                    if (typeof aVal === 'number') {
+                        return ascending ? aVal - bVal : bVal - aVal;
+                    }
+                    return ascending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                });
+                
+                rows.forEach(row => tbody.appendChild(row));
+                th.dataset.sort = ascending ? 'desc' : 'asc';
+                
+                document.querySelectorAll('th').forEach(h => {
+                    if (h !== th) h.dataset.sort = '';
+                });
+            });
+        }
+    });
 </script>
 {% endblock %}

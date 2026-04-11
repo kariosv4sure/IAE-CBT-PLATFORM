@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Users{% endblock %}
+{% block title %}User Management | IAE CBT Admin{% endblock %}
 
-{% block page_title %}User Management{% endblock %}
+{% block page_title %}👥 User Management{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -11,7 +11,35 @@
         max-width: 1400px;
         margin: 0 auto;
     }
-    
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-mini-card {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+        text-align: center;
+    }
+
+    .stat-mini-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+    }
+
+    .stat-mini-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
     .users-header {
         display: flex;
         justify-content: space-between;
@@ -20,12 +48,12 @@
         flex-wrap: wrap;
         gap: 1rem;
     }
-    
+
     .search-box {
         display: flex;
         gap: 0.5rem;
     }
-    
+
     .search-input {
         padding: 0.6rem 1rem;
         background: var(--bg-surface);
@@ -34,224 +62,267 @@
         color: var(--text-primary);
         min-width: 250px;
     }
-    
+
     .search-input:focus {
         outline: none;
         border-color: var(--accent-gold);
     }
-    
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 0.4rem 1rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-full);
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all var(--transition-fast);
+    }
+
+    .filter-btn.active {
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        border-color: var(--accent-gold);
+    }
+
+    .filter-btn:hover {
+        border-color: var(--accent-gold);
+        color: var(--text-primary);
+    }
+
     .users-table-container {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-lg);
         overflow-x: auto;
     }
-    
+
     .users-table {
         width: 100%;
         border-collapse: collapse;
     }
-    
+
     .users-table th {
         padding: 1rem;
         text-align: left;
         background: var(--bg-surface);
         color: var(--text-primary);
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid var(--border-color);
         white-space: nowrap;
     }
-    
+
     .users-table td {
         padding: 1rem;
         border-bottom: 1px solid var(--border-color);
         color: var(--text-secondary);
-        white-space: nowrap;
+        vertical-align: middle;
     }
-    
+
     .users-table tbody tr:hover {
         background: var(--bg-hover);
     }
-    
-    .status-badge {
-        display: inline-block;
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
         padding: 0.25rem 0.75rem;
         border-radius: var(--radius-full);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
-    
-    .status-vip {
-        background: rgba(40, 167, 69, 0.2);
+
+    .badge-vip {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(40, 167, 69, 0.05));
         color: var(--success);
         border: 1px solid var(--success);
     }
-    
-    .status-pending {
+
+    .badge-pending {
         background: rgba(255, 193, 7, 0.2);
         color: var(--warning);
         border: 1px solid var(--warning);
     }
-    
-    .exam-status {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: var(--radius-full);
-        font-size: 0.75rem;
-        font-weight: 600;
+
+    .badge-locked {
+        background: rgba(220, 53, 69, 0.2);
+        color: var(--danger);
+        border: 1px solid var(--danger);
     }
-    
-    .exam-taken {
+
+    .badge-completed {
         background: rgba(23, 162, 184, 0.2);
         color: var(--info);
+        border: 1px solid var(--info);
     }
-    
-    .exam-not-taken {
+
+    .badge-not-taken {
         background: var(--bg-surface);
         color: var(--text-muted);
+        border: 1px solid var(--border-color);
     }
-    
-    .action-buttons {
+
+    .action-group {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        flex-wrap: wrap;
     }
-    
-    .action-btn {
-        padding: 0.35rem 0.75rem;
-        background: transparent;
+
+    .action-icon {
+        padding: 0.3rem 0.6rem;
+        background: var(--bg-surface);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-sm);
         color: var(--text-secondary);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         cursor: pointer;
         transition: all var(--transition-fast);
         text-decoration: none;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
     }
-    
-    .action-btn:hover {
+
+    .action-icon:hover {
         background: var(--bg-hover);
-        color: var(--text-primary);
+        transform: translateY(-1px);
     }
-    
-    .action-btn.approve {
-        border-color: var(--success);
-        color: var(--success);
+
+    .action-approve { border-color: var(--success); color: var(--success); }
+    .action-revoke { border-color: var(--warning); color: var(--warning); }
+    .action-reset { border-color: var(--info); color: var(--info); }
+    .action-unlock { border-color: var(--success); color: var(--success); }
+    .action-delete { border-color: var(--danger); color: var(--danger); }
+    .action-view { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+    .subjects-preview {
+        font-size: 0.75rem;
+        max-width: 150px;
+        white-space: normal;
+        line-height: 1.3;
     }
-    
-    .action-btn.approve:hover {
-        background: rgba(40, 167, 69, 0.1);
-    }
-    
-    .action-btn.revoke {
-        border-color: var(--warning);
-        color: var(--warning);
-    }
-    
-    .action-btn.revoke:hover {
-        background: rgba(255, 193, 7, 0.1);
-    }
-    
-    .action-btn.reset {
-        border-color: var(--danger);
-        color: var(--danger);
-    }
-    
-    .action-btn.reset:hover {
-        background: rgba(220, 53, 69, 0.1);
-    }
-    
+
     @media (max-width: 768px) {
-        .users-container {
-            padding: 1rem;
-        }
-        
-        .users-header {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        
-        .search-input {
-            width: 100%;
-        }
+        .users-container { padding: 1rem; }
+        .users-header { flex-direction: column; align-items: stretch; }
+        .search-input { width: 100%; }
+        .action-group { flex-direction: column; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="users-container">
-    <div class="users-header">
-        <h2 style="margin-bottom: 0;">All Users ({{ users|length }})</h2>
-        <div class="search-box">
-            <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
-            <button class="btn btn-outline" onclick="filterTable()">🔍 Search</button>
+    <!-- Mini Stats -->
+    <div class="stats-row">
+        <div class="stat-mini-card">
+            <div class="stat-mini-value">{{ users|length }}</div>
+            <div class="stat-mini-label">Total Users</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-value">{{ users|selectattr('is_vip', 'true')|list|length }}</div>
+            <div class="stat-mini-label">VIP Activated</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-value">{{ users|selectattr('has_taken_exam', 'true')|list|length }}</div>
+            <div class="stat-mini-label">Exam Completed</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-value">{{ users|selectattr('is_locked', 'true')|list|length }}</div>
+            <div class="stat-mini-label">Locked Accounts</div>
         </div>
     </div>
-    
+
+    <div class="users-header">
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All Users</button>
+            <button class="filter-btn" data-filter="vip">VIP Only</button>
+            <button class="filter-btn" data-filter="pending">Pending Approval</button>
+            <button class="filter-btn" data-filter="completed">Exam Completed</button>
+            <button class="filter-btn" data-filter="locked">Locked Accounts</button>
+        </div>
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, username, email...">
+        </div>
+    </div>
+
     <div class="users-table-container">
         <table class="users-table" id="usersTable">
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Full Name</th>
-                    <th>Email</th>
+                    <th>User</th>
+                    <th>Contact</th>
                     <th>Subjects</th>
-                    <th>VIP Status</th>
-                    <th>Exam Status</th>
+                    <th>Status</th>
+                    <th>Exam</th>
                     <th>Registered</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
-                <tr>
-                    <td><strong>{{ user.username }}</strong></td>
-                    <td>{{ user.full_name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.get_chosen_subjects()|join(', ') }}</td>
+                <tr data-vip="{{ user.is_vip }}" data-locked="{{ user.is_locked }}" data-completed="{{ user.has_taken_exam }}">
+                    <td>
+                        <div style="display: flex; flex-direction: column;">
+                            <strong style="color: var(--text-primary);">{{ user.full_name }}</strong>
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">@{{ user.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.8rem;">{{ user.email }}</div>
+                    </td>
+                    <td>
+                        <div class="subjects-preview">
+                            {{ user.get_chosen_subjects()|join(', ') }}
+                        </div>
+                    </td>
                     <td>
                         {% if user.is_vip %}
-                            <span class="status-badge status-vip">VIP</span>
+                            <span class="badge badge-vip">⭐ VIP Active</span>
                         {% else %}
-                            <span class="status-badge status-pending">Pending</span>
+                            <span class="badge badge-pending">⏳ Pending</span>
+                        {% endif %}
+                        {% if user.is_locked %}
+                            <span class="badge badge-locked">🔒 Locked</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if user.has_taken_exam %}
-                            <span class="exam-status exam-taken">Completed</span>
+                            <span class="badge badge-completed">✅ Completed</span>
                         {% else %}
-                            <span class="exam-status exam-not-taken">Not Taken</span>
+                            <span class="badge badge-not-taken">📝 Not Taken</span>
                         {% endif %}
                     </td>
-                    <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td style="font-size: 0.75rem;">{{ user.created_at.strftime('%d/%m/%y') }}</td>
                     <td>
-                        <div class="action-buttons">
-                            {% if not user.is_vip %}
-                                <a href="{{ url_for('make_vip', user_id=user.id) }}" 
-                                   class="action-btn approve" 
-                                   onclick="return confirm('Approve VIP access for {{ user.full_name }}?')">
-                                    ✅ Approve
-                                </a>
-                            {% else %}
-                                <a href="{{ url_for('remove_vip', user_id=user.id) }}" 
-                                   class="action-btn revoke"
-                                   onclick="return confirm('Revoke VIP access from {{ user.full_name }}?')">
-                                    ⭐ Revoke
-                                </a>
-                            {% endif %}
+                        <div class="action-group">
+                            <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="action-icon action-view" title="View Details">👁️ View</a>
                             
-                            {% if user.has_taken_exam %}
-                                <a href="{{ url_for('reset_exam', user_id=user.id) }}" 
-                                   class="action-btn reset"
-                                   onclick="return confirm('Reset exam for {{ user.full_name }}? This action cannot be undone.')">
-                                    🔄 Reset
-                                </a>
+                            {% if not user.is_vip %}
+                                <a href="{{ url_for('make_vip', user_id=user.id) }}" class="action-icon action-approve" onclick="return confirm('Approve VIP for {{ user.full_name }}?')">✅ Approve</a>
+                            {% else %}
+                                <a href="{{ url_for('remove_vip', user_id=user.id) }}" class="action-icon action-revoke" onclick="return confirm('Revoke VIP from {{ user.full_name }}?')">⭐ Revoke</a>
                             {% endif %}
+
+                            {% if user.is_locked %}
+                                <a href="{{ url_for('unlock_user', user_id=user.id) }}" class="action-icon action-unlock" onclick="return confirm('Unlock {{ user.full_name }}\'s account?')">🔓 Unlock</a>
+                            {% endif %}
+
+                            {% if user.has_taken_exam %}
+                                <a href="{{ url_for('reset_exam', user_id=user.id) }}" class="action-icon action-reset" onclick="return confirm('Reset exam for {{ user.full_name }}?')">🔄 Reset</a>
+                            {% endif %}
+
+                            <a href="{{ url_for('delete_user', user_id=user.id) }}" class="action-icon action-delete" onclick="return confirm('⚠️ DELETE {{ user.full_name }}? This cannot be undone!')">🗑️ Delete</a>
                         </div>
                     </td>
                 </tr>
@@ -262,37 +333,45 @@
 </div>
 
 <script>
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    let currentFilter = 'all';
+    let currentSearch = '';
+
     function filterTable() {
-        const input = document.getElementById('searchInput');
-        const filter = input.value.toLowerCase();
-        const table = document.getElementById('usersTable');
-        const rows = table.getElementsByTagName('tr');
+        const rows = document.querySelectorAll('#usersTable tbody tr');
         
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            let found = false;
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            const isVIP = row.dataset.vip === 'true';
+            const isLocked = row.dataset.locked === 'true';
+            const isCompleted = row.dataset.completed === 'true';
             
-            for (let j = 0; j < cells.length - 1; j++) {
-                const cell = cells[j];
-                if (cell) {
-                    const text = cell.textContent || cell.innerText;
-                    if (text.toLowerCase().indexOf(filter) > -1) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
+            let matchesFilter = true;
+            if (currentFilter === 'vip') matchesFilter = isVIP;
+            else if (currentFilter === 'pending') matchesFilter = !isVIP && !isLocked;
+            else if (currentFilter === 'completed') matchesFilter = isCompleted;
+            else if (currentFilter === 'locked') matchesFilter = isLocked;
             
-            row.style.display = found ? '' : 'none';
-        }
+            const matchesSearch = text.includes(currentSearch.toLowerCase());
+            
+            row.style.display = (matchesFilter && matchesSearch) ? '' : 'none';
+        });
     }
-    
-    // Enter key search
-    document.getElementById('searchInput').addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
+
+    searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        filterTable();
+    });
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
             filterTable();
-        }
+        });
     });
 </script>
 {% endblock %}

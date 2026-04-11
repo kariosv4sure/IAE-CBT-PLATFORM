@@ -1,112 +1,458 @@
 {% extends "base.html" %}
 
-{% block title %}Exam Results - IAE CBT{% endblock %}
+{% block title %}Exam Results | IAE CBT{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-wrapper {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* Score Hero Section */
+    .score-hero {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+        border: 1px solid var(--border-color);
+        border-radius: 28px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .score-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 30% 50%, rgba(201, 160, 61, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    .score-circle {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, var(--accent-gold), #a07c2a);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(201, 160, 61, 0.3);
+    }
+
+    .score-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: white;
+        line-height: 1;
+    }
+
+    .score-total {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.85);
+    }
+
+    .score-percent {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0.5rem 0;
+    }
+
+    .grade-badge {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .grade-A { background: rgba(40,167,69,0.2); color: #28a745; border: 1px solid #28a745; }
+    .grade-B { background: rgba(201,160,61,0.2); color: #c9a03d; border: 1px solid #c9a03d; }
+    .grade-C { background: rgba(255,193,7,0.2); color: #ffc107; border: 1px solid #ffc107; }
+    .grade-D { background: rgba(220,53,69,0.2); color: #dc3545; border: 1px solid #dc3545; }
+
+    .score-message {
+        color: var(--text-secondary);
+        margin-top: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.25rem;
+        text-align: center;
+        transition: transform 0.2s;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent-gold);
+    }
+
+    .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; }
+    .stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-correct { color: #28a745; }
+    .stat-wrong { color: #dc3545; }
+    .stat-accuracy { color: var(--accent-gold); }
+
+    /* Subject Breakdown */
+    .subject-breakdown {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .subject-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .subject-row:last-child { border-bottom: none; }
+    .subject-name { font-weight: 500; min-width: 140px; }
+    .subject-bar { flex: 1; height: 8px; background: var(--bg-surface); border-radius: 10px; overflow: hidden; }
+    .subject-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+    .subject-score { min-width: 80px; text-align: right; font-weight: 600; }
+
+    /* Question Review */
+    .review-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-tab {
+        padding: 0.4rem 1rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+    }
+
+    .filter-tab.active {
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+        border-color: var(--accent-gold);
+    }
+
+    .review-card {
+        background: var(--bg-surface);
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+        transition: transform 0.2s;
+    }
+
+    .review-card:hover { transform: translateX(4px); }
+    .review-card.correct { border-left-color: #28a745; }
+    .review-card.wrong { border-left-color: #dc3545; }
+
+    .review-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .review-subject {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: var(--bg-card);
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+    }
+
+    .review-status {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .review-question {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .option-item {
+        padding: 0.5rem 0.75rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .option-letter {
+        width: 24px;
+        height: 24px;
+        background: var(--bg-surface);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.75rem;
+    }
+
+    .option-selected { border-color: var(--accent-gold); background: rgba(201,160,61,0.1); }
+    .option-correct { border-color: #28a745; background: rgba(40,167,69,0.1); }
+    .option-wrong { border-color: #dc3545; background: rgba(220,53,69,0.1); }
+
+    .explanation-box {
+        background: rgba(23,162,184,0.08);
+        border-radius: 12px;
+        padding: 0.75rem;
+        margin-top: 0.75rem;
+        border-left: 3px solid #17a2b8;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+        .results-wrapper { padding: 1rem; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .options-grid { grid-template-columns: 1fr; }
+        .subject-row { flex-direction: column; align-items: flex-start; }
+        .subject-bar { width: 100%; }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="result-container" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- Score Card -->
-    <div style="background: linear-gradient(135deg, #1a1f2e, #141824); border-radius: 24px; padding: 2rem; text-align: center; margin-bottom: 2rem; border: 1px solid #2a3040;">
-        <h2 style="color: #c9a03d; margin-bottom: 1.5rem;">🎯 Your Score</h2>
-        
-        <!-- Big Circle Score -->
-        <div style="width: 180px; height: 180px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #c9a03d, #a07c2a); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <span style="font-size: 3.5rem; font-weight: 800; color: white;">{{ score }}</span>
-            <span style="font-size: 1.2rem; color: rgba(255,255,255,0.8);">/ {{ total }}</span>
+<div class="results-wrapper">
+    <!-- Score Hero Section -->
+    <div class="score-hero">
+        <div class="score-circle">
+            <span class="score-number">{{ ((score / total) * 400) | round(0) | int }}</span>
+            <span class="score-total">/ 400</span>
         </div>
-        
-        <!-- Percentage -->
+
         {% set percentage = (score / total * 100) | round(1) %}
-        <div style="font-size: 2rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">{{ percentage }}%</div>
-        
-        <!-- Grade Message -->
-        <div style="margin-top: 1rem;">
-            {% if percentage >= 80 %}
-                <span style="background: rgba(40,167,69,0.2); color: #28a745; padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 600;">🏆 Excellent! Grade A</span>
-                <p style="color: #a0a5b5; margin-top: 1rem;">Outstanding performance! You're well prepared for JAMB 2026.</p>
-            {% elif percentage >= 60 %}
-                <span style="background: rgba(201,160,61,0.2); color: #c9a03d; padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 600;">👍 Good Job! Grade B</span>
-                <p style="color: #a0a5b5; margin-top: 1rem;">Solid performance! Review the incorrect answers to improve further.</p>
-            {% elif percentage >= 40 %}
-                <span style="background: rgba(255,193,7,0.2); color: #ffc107; padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 600;">📚 Keep Practicing! Grade C</span>
-                <p style="color: #a0a5b5; margin-top: 1rem;">You're on the right track. More practice will boost your score significantly.</p>
-            {% else %}
-                <span style="background: rgba(220,53,69,0.2); color: #dc3545; padding: 0.5rem 1.5rem; border-radius: 50px; font-weight: 600;">💪 Needs Improvement</span>
-                <p style="color: #a0a5b5; margin-top: 1rem;">Don't be discouraged! Review the explanations and try again.</p>
-            {% endif %}
+        <div class="score-percent">{{ percentage }}%</div>
+
+        {% if percentage >= 80 %}
+            <div class="grade-badge grade-A">🏆 EXCELLENT — Grade A</div>
+            <div class="score-message">Outstanding! You're well prepared for JAMB 2026. Keep it up!</div>
+        {% elif percentage >= 60 %}
+            <div class="grade-badge grade-B">👍 GOOD — Grade B</div>
+            <div class="score-message">Solid performance! Review your mistakes and you'll ace the real exam.</div>
+        {% elif percentage >= 40 %}
+            <div class="grade-badge grade-C">📚 AVERAGE — Grade C</div>
+            <div class="score-message">You're on the right track. More practice will boost your score.</div>
+        {% else %}
+            <div class="grade-badge grade-D">💪 NEEDS IMPROVEMENT — Grade D</div>
+            <div class="score-message">Don't give up! Learn from your mistakes and try again.</div>
+        {% endif %}
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value stat-correct">{{ results | selectattr('is_correct', 'true') | list | length }}</div>
+            <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value stat-wrong">{{ results | selectattr('is_correct', 'false') | list | length }}</div>
+            <div class="stat-label">Incorrect</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value stat-accuracy">{{ percentage }}%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value stat-accuracy">{{ ((score / total) * 400) | round(0) | int }}</div>
+            <div class="stat-label">JAMB Score /400</div>
         </div>
     </div>
-    
-    <!-- Quick Stats Row -->
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
-        <div style="background: #141824; border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid #2a3040;">
-            <div style="font-size: 2rem;">✅</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #28a745;">{{ results | selectattr('is_correct', 'true') | list | length }}</div>
-            <div style="color: #a0a5b5; font-size: 0.85rem;">Correct</div>
-        </div>
-        <div style="background: #141824; border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid #2a3040;">
-            <div style="font-size: 2rem;">❌</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #dc3545;">{{ results | selectattr('is_correct', 'false') | list | length }}</div>
-            <div style="color: #a0a5b5; font-size: 0.85rem;">Incorrect</div>
-        </div>
-        <div style="background: #141824; border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid #2a3040;">
-            <div style="font-size: 2rem;">📊</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #c9a03d;">{{ percentage }}%</div>
-            <div style="color: #a0a5b5; font-size: 0.85rem;">Accuracy</div>
-        </div>
-    </div>
-    
-    <!-- Detailed Review -->
-    <div style="background: #141824; border-radius: 24px; padding: 1.5rem; border: 1px solid #2a3040;">
-        <h3 style="color: white; margin-bottom: 1.5rem;">📝 Detailed Review</h3>
-        
-        {% for r in results %}
-        <div style="background: #1a1f2e; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; border-left: 4px solid {{ '#28a745' if r.is_correct else '#dc3545' }};">
-            <!-- Question Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap;">
-                <span style="color: #c9a03d; font-size: 0.85rem;">{{ r.subject if r.subject else 'Question' }}</span>
-                <span style="color: {{ '#28a745' if r.is_correct else '#dc3545' }}; font-weight: 600;">
-                    {{ '✓ Correct' if r.is_correct else '✗ Incorrect' }}
-                </span>
-            </div>
-            
-            <!-- Question Text -->
-            <div style="color: white; font-weight: 500; margin-bottom: 1rem;">{{ r.question }}</div>
-            
-            <!-- Options -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
-                {% for letter in ['A', 'B', 'C', 'D'] %}
-                {% set is_selected = r.selected == letter %}
-                {% set is_correct_ans = r.correct == letter %}
-                <div style="padding: 0.5rem 0.75rem; background: #141824; border-radius: 8px; border: 1px solid 
-                           {% if is_correct_ans %}#28a745{% elif is_selected and not r.is_correct %}#dc3545{% else %}#2a3040{% endif %};
-                           {% if is_selected %}background: rgba(201,160,61,0.1);{% endif %}">
-                    <span style="color: #c9a03d; font-weight: 600;">{{ letter }}.</span>
-                    <span style="color: #a0a5b5; margin-left: 0.5rem;">{{ r.options[letter] }}</span>
-                    {% if is_correct_ans %}
-                        <span style="color: #28a745; float: right;">✓</span>
-                    {% elif is_selected and not r.is_correct %}
-                        <span style="color: #dc3545; float: right;">✗</span>
-                    {% endif %}
+
+    <!-- Subject Breakdown -->
+    {% set subjects_dict = {} %}
+    {% for r in results %}
+        {% set subj = r.subject if r.subject else 'General' %}
+        {% if subj not in subjects_dict %}
+            {% set _ = subjects_dict.update({subj: {'total': 0, 'correct': 0}}) %}
+        {% endif %}
+        {% set _ = subjects_dict[subj].update({'total': subjects_dict[subj].total + 1}) %}
+        {% if r.is_correct %}
+            {% set _ = subjects_dict[subj].update({'correct': subjects_dict[subj].correct + 1}) %}
+        {% endif %}
+    {% endfor %}
+
+    {% if subjects_dict|length > 0 %}
+    <div class="subject-breakdown">
+        <h3 class="section-title">📈 Subject Performance</h3>
+        {% for subj, data in subjects_dict.items() %}
+        {% set subj_percent = (data.correct / data.total * 100) | round(1) %}
+        <div class="subject-row">
+            <span class="subject-name">{{ subj }}</span>
+            <div class="subject-bar">
+                <div class="subject-fill" style="width: {{ subj_percent }}%; background: 
+                    {% if subj_percent >= 70 %}#28a745
+                    {% elif subj_percent >= 50 %}#c9a03d
+                    {% elif subj_percent >= 30 %}#ffc107
+                    {% else %}#dc3545{% endif %};">
                 </div>
-                {% endfor %}
             </div>
-            
-            <!-- Explanation -->
-            {% if r.explanation %}
-            <div style="background: rgba(23,162,184,0.1); border-radius: 12px; padding: 0.75rem; margin-top: 0.75rem;">
-                <span style="color: #17a2b8; font-weight: 600;">💡 Explanation:</span>
-                <span style="color: #a0a5b5; margin-left: 0.5rem;">{{ r.explanation }}</span>
-            </div>
-            {% endif %}
+            <span class="subject-score">{{ data.correct }}/{{ data.total }}</span>
         </div>
         {% endfor %}
     </div>
-    
+    {% endif %}
+
+    <!-- Question Review -->
+    <div class="review-section">
+        <div class="review-header">
+            <h3 class="section-title" style="margin-bottom: 0;">📝 Detailed Review</h3>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All ({{ results|length }})</button>
+                <button class="filter-tab" data-filter="correct">✅ Correct ({{ results | selectattr('is_correct', 'true') | list | length }})</button>
+                <button class="filter-tab" data-filter="wrong">❌ Incorrect ({{ results | selectattr('is_correct', 'false') | list | length }})</button>
+            </div>
+        </div>
+
+        <div id="review-list">
+            {% for r in results %}
+            <div class="review-card {{ 'correct' if r.is_correct else 'wrong' }}" data-status="{{ 'correct' if r.is_correct else 'wrong' }}">
+                <div class="review-header-row">
+                    <span class="review-subject">{{ r.subject if r.subject else 'Question' }}</span>
+                    <span class="review-status" style="color: {{ '#28a745' if r.is_correct else '#dc3545' }};">
+                        {{ '✓ Correct' if r.is_correct else '✗ Incorrect' }}
+                    </span>
+                </div>
+
+                <div class="review-question">{{ r.question }}</div>
+
+                <div class="options-grid">
+                    {% for letter in ['A', 'B', 'C', 'D'] %}
+                    {% set is_selected = r.selected == letter %}
+                    {% set is_correct_ans = r.correct == letter %}
+                    <div class="option-item
+                        {% if is_selected %}option-selected{% endif %}
+                        {% if is_correct_ans %}option-correct{% endif %}
+                        {% if is_selected and not r.is_correct %}option-wrong{% endif %}">
+                        <span class="option-letter">{{ letter }}</span>
+                        <span>{{ r.options[letter] }}</span>
+                        {% if is_correct_ans %}
+                            <span style="margin-left: auto; color: #28a745;">✓</span>
+                        {% elif is_selected and not r.is_correct %}
+                            <span style="margin-left: auto; color: #dc3545;">✗</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if r.explanation %}
+                <div class="explanation-box">
+                    <strong style="color: #17a2b8;">💡 Explanation:</strong>
+                    <span style="color: var(--text-secondary); margin-left: 0.5rem;">{{ r.explanation }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- Action Buttons -->
-    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
-        <a href="{{ url_for('dashboard') }}" style="background: transparent; border: 1px solid #c9a03d; color: #c9a03d; padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 600;">← Dashboard</a>
-        <button onclick="window.print()" style="background: #c9a03d; border: none; color: #0a0f1a; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer;">🖨️ Print</button>
-        <a href="{{ url_for('leaderboard') }}" style="background: transparent; border: 1px solid #2a3040; color: white; padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 600;">🏆 Leaderboard</a>
+    <div class="action-buttons">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">← Back to Dashboard</a>
+        <button onclick="window.print()" class="btn btn-primary">🖨️ Print Results</button>
+        <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-gold">🏆 View Leaderboard</a>
     </div>
 </div>
+
+<script>
+    // Filter functionality
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const reviewCards = document.querySelectorAll('.review-card');
+
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            filterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const filter = tab.dataset.filter;
+            reviewCards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = card.dataset.status === filter ? 'block' : 'none';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

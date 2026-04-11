@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics | Admin{% endblock %}
+
+{% block page_title %}📊 Platform Statistics{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 1.5rem;">
+    <!-- Question Stats -->
+    <div style="background: var(--bg-card); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+        <h3>📚 Question Bank Overview</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div style="text-align: center; padding: 1rem; background: var(--bg-surface); border-radius: 16px;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent-gold);">{{ subject_stats.values() | sum }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Total Questions</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: var(--bg-surface); border-radius: 16px;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent-gold);">{{ subject_stats|length }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Subjects Available</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: var(--bg-surface); border-radius: 16px;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent-gold);">{{ (subject_stats.values() | sum / subject_stats|length) | round(0) }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Avg Questions/Subject</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions by Subject Table -->
+    <div style="background: var(--bg-card); border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color);">
+        <h3>📖 Questions by Subject</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="text-align: left; padding: 0.75rem;">Subject</th>
+                        <th style="text-align: center; padding: 0.75rem;">Count</th>
+                        <th style="text-align: left; padding: 0.75rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject, count in subject_stats.items() %}
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">{{ subject }}</td>
+                        <td style="text-align: center; padding: 0.75rem; font-weight: 600;">{{ count }}</td>
+                        <td style="padding: 0.75rem;">
+                            {% if count >= 120 %}
+                                <span style="background: rgba(40,167,69,0.2); color: #28a745; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem;">✅ Excellent</span>
+                            {% elif count >= 60 %}
+                                <span style="background: rgba(201,160,61,0.2); color: #c9a03d; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem;">⚠️ Good</span>
+                            {% elif count >= 40 %}
+                                <span style="background: rgba(255,193,7,0.2); color: #ffc107; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem;">📌 Adequate</span>
+                            {% else %}
+                                <span style="background: rgba(220,53,69,0.2); color: #dc3545; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem;">❌ Low</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Daily Registrations -->
+    <div style="background: var(--bg-card); border-radius: 20px; padding: 1.5rem; margin-top: 1.5rem; border: 1px solid var(--border-color);">
+        <h3>📈 Daily Registrations (Last 30 Days)</h3>
+        <div style="overflow-x: auto; margin-top: 1rem;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="text-align: left; padding: 0.5rem;">Date</th>
+                        <th style="text-align: center; padding: 0.5rem;">New Users</th>
+                        <th style="text-align: left; padding: 0.5rem;">Bar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in daily_registrations %}
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.5rem;">{{ reg.date }}</td>
+                        <td style="text-align: center; padding: 0.5rem; font-weight: 600;">{{ reg.count }}</td>
+                        <td style="padding: 0.5rem;">
+                            <div style="width: 100%; max-width: 200px; height: 20px; background: var(--bg-surface); border-radius: 10px; overflow: hidden;">
+                                <div style="width: {{ (reg.count / 50 * 100) if reg.count <= 50 else 100 }}%; height: 100%; background: var(--accent-gold); border-radius: 10px;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

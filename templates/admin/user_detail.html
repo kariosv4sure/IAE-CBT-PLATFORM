@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}User Details | Admin{% endblock %}
+
+{% block page_title %}👤 User Details: {{ target_user.full_name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; padding: 1.5rem;">
+    <!-- User Info Card -->
+    <div style="background: var(--bg-card); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2>{{ target_user.full_name }}</h2>
+                <p style="color: var(--text-secondary);">@{{ target_user.username }} • {{ target_user.email }}</p>
+                <p>📅 Registered: {{ target_user.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p>🔐 Last Login: {{ target_user.last_login.strftime('%Y-%m-%d %H:%M') if target_user.last_login else 'Never' }}</p>
+                <p>🎯 Subjects: {{ target_user.get_chosen_subjects()|join(', ') }}</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                {% if not target_user.is_vip %}
+                <a href="{{ url_for('make_vip', user_id=target_user.id) }}" style="background: #28a745; color: white; padding: 0.5rem 1rem; border-radius: 10px; text-decoration: none;">✅ Make VIP</a>
+                {% else %}
+                <a href="{{ url_for('remove_vip', user_id=target_user.id) }}" style="background: #ffc107; color: #000; padding: 0.5rem 1rem; border-radius: 10px; text-decoration: none;">⭐ Remove VIP</a>
+                {% endif %}
+                {% if target_user.is_locked %}
+                <a href="{{ url_for('unlock_user', user_id=target_user.id) }}" style="background: #17a2b8; color: white; padding: 0.5rem 1rem; border-radius: 10px; text-decoration: none;">🔓 Unlock</a>
+                {% endif %}
+                <a href="{{ url_for('reset_exam', user_id=target_user.id) }}" style="background: #dc3545; color: white; padding: 0.5rem 1rem; border-radius: 10px; text-decoration: none;">🔄 Reset Exam</a>
+                <a href="{{ url_for('delete_user', user_id=target_user.id) }}" style="background: #dc3545; color: white; padding: 0.5rem 1rem; border-radius: 10px; text-decoration: none;" onclick="return confirm('Delete user?')">🗑️ Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam History -->
+    <div style="background: var(--bg-card); border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color);">
+        <h3>📋 Exam History</h3>
+        <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+            <thead>
+                <tr><th style="text-align: left; padding: 0.5rem;">Started</th><th style="text-align: left; padding: 0.5rem;">Submitted</th><th style="text-align: left; padding: 0.5rem;">Score</th><th style="text-align: left; padding: 0.5rem;">JAMB</th><th style="text-align: left; padding: 0.5rem;">Status</th></tr>
+            </thead>
+            <tbody>
+                {% for session in exam_sessions %}
+                {% set jamb = ((session.score / session.total_questions) * 400) | round(0) if session.score else 0 %}
+                <tr>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{{ session.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{{ session.submitted_at.strftime('%Y-%m-%d %H:%M') if session.submitted_at else 'Not submitted' }}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{% if session.score %}{{ session.score }}/{{ session.total_questions }}{% else %}—{% endif %}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{% if session.score %}{{ jamb }}/400{% else %}—{% endif %}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">{% if session.submitted_at %}✅ Completed{% elif session.cancelled %}❌ Cancelled{% else %}🟡 In Progress{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

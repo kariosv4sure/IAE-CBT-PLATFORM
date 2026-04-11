@@ -1,229 +1,145 @@
 {% extends "base.html" %}
 
-{% block title %}Leaderboard{% endblock %}
-
-{% block page_title %}Top Performers{% endblock %}
+{% block title %}Leaderboard | IAE CBT{% endblock %}
 
 {% block extra_css %}
 <style>
-    .leaderboard-container {
-        max-width: 900px;
-        margin: 2rem auto;
-        padding: 0 1rem;
+    .leaderboard-wrapper {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
     }
-    
+
+    /* Header */
     .leaderboard-header {
         text-align: center;
         margin-bottom: 2rem;
     }
-    
+
     .leaderboard-header h1 {
         font-size: 2.5rem;
-        margin-bottom: 0.5rem;
         background: linear-gradient(135deg, var(--accent-gold), #f0d06b);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        margin-bottom: 0.5rem;
     }
-    
+
     .leaderboard-header p {
         color: var(--text-secondary);
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
-    
-    /* Podium */
+
+    /* Podium Section */
+    .podium-section {
+        background: linear-gradient(180deg, var(--bg-card), transparent);
+        border-radius: 32px;
+        padding: 2rem 1rem;
+        margin-bottom: 2rem;
+    }
+
     .podium {
         display: flex;
         align-items: flex-end;
         justify-content: center;
-        gap: 2rem;
-        margin-bottom: 3rem;
-        padding: 2rem 1rem;
-        background: linear-gradient(180deg, var(--bg-card), transparent);
-        border-radius: var(--radius-xl);
+        gap: 1.5rem;
+        flex-wrap: wrap;
     }
-    
-    .podium-item {
+
+    .podium-card {
         text-align: center;
         flex: 1;
-        max-width: 200px;
+        min-width: 140px;
+        transition: transform 0.3s;
     }
-    
+
+    .podium-card:hover {
+        transform: translateY(-5px);
+    }
+
     .podium-medal {
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
     }
-    
+
     .podium-avatar {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1rem;
-        border-radius: var(--radius-full);
+        width: 85px;
+        height: 85px;
+        margin: 0 auto 0.75rem;
+        background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 2rem;
         font-weight: 700;
         text-transform: uppercase;
+        border: 2px solid var(--border-color);
     }
-    
-    .podium-first .podium-avatar {
+
+    .podium-1 .podium-avatar {
         width: 100px;
         height: 100px;
-        background: linear-gradient(135deg, var(--accent-gold), #f0d06b);
-        color: var(--bg-primary);
-        box-shadow: 0 0 30px rgba(201, 160, 61, 0.4);
+        background: linear-gradient(135deg, #ffd700, #ffed4a);
+        color: #1a1f2e;
+        border: none;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     }
-    
-    .podium-second .podium-avatar {
-        background: linear-gradient(135deg, #a0a5b5, #c0c5d5);
-        color: var(--bg-primary);
+
+    .podium-2 .podium-avatar {
+        background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+        color: #1a1f2e;
+        border: none;
     }
-    
-    .podium-third .podium-avatar {
+
+    .podium-3 .podium-avatar {
         background: linear-gradient(135deg, #cd7f32, #daa06d);
-        color: var(--bg-primary);
+        color: #1a1f2e;
+        border: none;
     }
-    
+
     .podium-name {
-        font-weight: 600;
-        font-size: 1.1rem;
+        font-weight: 700;
+        font-size: 1rem;
         margin-bottom: 0.25rem;
         color: var(--text-primary);
     }
-    
+
     .podium-score {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 700;
         color: var(--accent-gold);
     }
-    
-    .podium-bar {
-        height: 100px;
-        background: var(--bg-surface);
-        border-radius: var(--radius-md) var(--radius-md) 0 0;
-        margin-bottom: 1rem;
-        border: 1px solid var(--border-color);
-        border-bottom: none;
-    }
-    
-    .podium-first .podium-bar {
-        height: 140px;
-        background: linear-gradient(180deg, rgba(201, 160, 61, 0.2), var(--bg-surface));
-        border-color: var(--accent-gold);
-    }
-    
-    .podium-second .podium-bar {
-        height: 110px;
-    }
-    
-    .podium-third .podium-bar {
-        height: 90px;
-    }
-    
-    /* Leaderboard Table */
-    .leaderboard-table-container {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        margin-bottom: 2rem;
-    }
-    
-    .leaderboard-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .leaderboard-table th {
-        padding: 1rem 1.5rem;
-        text-align: left;
-        background: var(--bg-surface);
-        color: var(--text-secondary);
-        font-weight: 600;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-bottom: 2px solid var(--border-color);
-    }
-    
-    .leaderboard-table td {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        color: var(--text-primary);
-    }
-    
-    .leaderboard-table tbody tr:hover {
-        background: var(--bg-hover);
-    }
-    
-    .leaderboard-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .rank-cell {
-        font-weight: 700;
-        width: 80px;
-    }
-    
-    .rank-1 { color: var(--accent-gold); }
-    .rank-2 { color: #a0a5b5; }
-    .rank-3 { color: #cd7f32; }
-    
-    .user-cell {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .user-avatar-small {
-        width: 40px;
-        height: 40px;
-        background: var(--bg-surface);
-        border-radius: var(--radius-full);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        text-transform: uppercase;
-        border: 1px solid var(--border-color);
-    }
-    
-    .user-info {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .user-name {
-        font-weight: 600;
-    }
-    
-    .user-subjects {
+
+    .podium-percent {
         font-size: 0.75rem;
-        color: var(--text-muted);
-    }
-    
-    .score-cell {
-        font-weight: 700;
-        color: var(--accent-gold);
-        font-size: 1.1rem;
-    }
-    
-    .percentage-cell {
         color: var(--text-secondary);
     }
-    
-    /* Current User Highlight */
-    .current-user-row {
-        background: rgba(201, 160, 61, 0.1) !important;
-        border-left: 3px solid var(--accent-gold);
+
+    .podium-bar {
+        height: 80px;
+        background: var(--bg-surface);
+        border-radius: 12px 12px 0 0;
+        margin-top: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-bottom: none;
     }
-    
+
+    .podium-1 .podium-bar {
+        height: 120px;
+        background: linear-gradient(180deg, rgba(255, 215, 0, 0.2), var(--bg-surface));
+        border-color: #ffd700;
+    }
+
+    .podium-2 .podium-bar { height: 95px; }
+    .podium-3 .podium-bar { height: 75px; }
+
+    /* Your Rank Card */
     .your-rank-card {
         background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
+        border-radius: 20px;
+        padding: 1.25rem 1.5rem;
         margin-bottom: 2rem;
         display: flex;
         align-items: center;
@@ -231,310 +147,408 @@
         flex-wrap: wrap;
         gap: 1rem;
     }
-    
-    .your-rank-info {
+
+    .rank-info {
         display: flex;
         align-items: center;
         gap: 1.5rem;
+        flex-wrap: wrap;
     }
-    
-    .your-rank-badge {
+
+    .rank-badge {
         text-align: center;
+        background: var(--accent-gold);
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
     }
-    
+
     .rank-number {
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 800;
-        color: var(--accent-gold);
+        color: var(--bg-primary);
         line-height: 1;
     }
-    
+
     .rank-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
+        font-size: 0.7rem;
+        color: var(--bg-primary);
+        opacity: 0.8;
     }
-    
-    .your-score {
+
+    .your-score-box {
         text-align: center;
     }
-    
-    .score-big {
-        font-size: 2rem;
+
+    .your-score-value {
+        font-size: 1.5rem;
         font-weight: 700;
-        color: var(--text-primary);
+        color: var(--accent-gold);
     }
-    
-    .score-out-of {
+
+    .rank-message {
         color: var(--text-secondary);
         font-size: 0.9rem;
     }
-    
+
+    /* Leaderboard Table */
+    .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .leaderboard-table th {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .leaderboard-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+        vertical-align: middle;
+    }
+
+    .leaderboard-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .leaderboard-table tbody tr:hover {
+        background: var(--bg-hover);
+    }
+
+    .current-user-row {
+        background: rgba(201, 160, 61, 0.08);
+        border-left: 3px solid var(--accent-gold);
+    }
+
+    .rank-cell {
+        font-weight: 700;
+        width: 70px;
+    }
+
+    .rank-1 { color: #ffd700; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #cd7f32; }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar {
+        width: 42px;
+        height: 42px;
+        background: var(--bg-surface);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1px solid var(--border-color);
+    }
+
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-fullname {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .user-subjects {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+    }
+
+    .score-cell {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--accent-gold);
+    }
+
+    .percent-cell {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
     /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 4rem 2rem;
+        padding: 3rem 2rem;
         background: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-lg);
+        border-radius: 20px;
     }
-    
+
     .empty-icon {
         font-size: 4rem;
         margin-bottom: 1rem;
         opacity: 0.5;
     }
-    
+
     .empty-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         margin-bottom: 0.5rem;
+        color: var(--text-primary);
     }
-    
+
     .empty-message {
         color: var(--text-secondary);
         margin-bottom: 1.5rem;
     }
-    
-    /* Mobile Responsive */
+
+    /* Footer */
+    .leaderboard-footer {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+
+    /* Responsive */
     @media (max-width: 768px) {
+        .leaderboard-wrapper {
+            padding: 1rem;
+        }
+
         .leaderboard-header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
-        
+
         .podium {
-            gap: 1rem;
-            padding: 1rem 0.5rem;
+            gap: 0.75rem;
         }
-        
+
+        .podium-card {
+            min-width: 100px;
+        }
+
         .podium-avatar {
             width: 60px;
             height: 60px;
             font-size: 1.5rem;
         }
-        
-        .podium-first .podium-avatar {
+
+        .podium-1 .podium-avatar {
             width: 75px;
             height: 75px;
         }
-        
+
         .podium-name {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
-        
+
         .podium-score {
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
-        
-        .podium-bar {
-            height: 70px;
-        }
-        
-        .podium-first .podium-bar {
-            height: 100px;
-        }
-        
-        .podium-second .podium-bar {
-            height: 85px;
-        }
-        
-        .podium-third .podium-bar {
-            height: 70px;
-        }
-        
-        .leaderboard-table th,
-        .leaderboard-table td {
-            padding: 0.75rem;
-        }
-        
+
         .leaderboard-table th:nth-child(4),
         .leaderboard-table td:nth-child(4) {
             display: none;
         }
-        
+
         .your-rank-card {
             flex-direction: column;
             text-align: center;
         }
-        
-        .your-rank-info {
-            flex-direction: column;
-            gap: 0.5rem;
+
+        .rank-info {
+            justify-content: center;
         }
-    }
-    
-    @media (max-width: 480px) {
-        .podium-medal {
-            font-size: 1.8rem;
-        }
-        
+
         .user-cell {
             flex-direction: column;
             align-items: flex-start;
-            gap: 0.25rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .podium {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .podium-card {
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .podium-bar {
+            display: none;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 0.75rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="leaderboard-container">
+<div class="leaderboard-wrapper">
     <div class="leaderboard-header">
         <h1>🏆 Leaderboard</h1>
-        <p>Top performers in JAMB 2026 CBT Practice</p>
+        <p>Top performers in IAE CBT Mock Examination</p>
     </div>
-    
-    {% if top_scores %}
-        <!-- Podium for Top 3 -->
-        <div class="podium">
-            {% if top_scores|length > 1 %}
-            <!-- 2nd Place -->
-            <div class="podium-item podium-second">
-                <div class="podium-medal">🥈</div>
-                <div class="podium-avatar">
-                    {{ top_scores[1][0].full_name[0].upper() }}
+
+    {% if leaderboard and leaderboard|length > 0 %}
+        <!-- Podium Section -->
+        <div class="podium-section">
+            <div class="podium">
+                {% if leaderboard|length > 1 %}
+                <!-- 2nd Place -->
+                <div class="podium-card podium-2">
+                    <div class="podium-medal">🥈</div>
+                    <div class="podium-avatar">{{ leaderboard[1].full_name[0] }}</div>
+                    <div class="podium-name">{{ leaderboard[1].full_name[:20] }}</div>
+                    <div class="podium-score">{{ leaderboard[1].score }}/180</div>
+                    <div class="podium-percent">{{ ((leaderboard[1].score / 180) * 100) | round(1) }}%</div>
+                    <div class="podium-bar"></div>
                 </div>
-                <div class="podium-bar"></div>
-                <div class="podium-name">{{ top_scores[1][0].full_name }}</div>
-                <div class="podium-score">{{ top_scores[1][1].score }}/180</div>
-                <div style="color: var(--text-secondary); font-size: 0.85rem;">
-                    {{ ((top_scores[1][1].score / 180) * 100) | round(1) }}%
+                {% endif %}
+
+                <!-- 1st Place -->
+                <div class="podium-card podium-1">
+                    <div class="podium-medal">👑</div>
+                    <div class="podium-avatar">{{ leaderboard[0].full_name[0] }}</div>
+                    <div class="podium-name">{{ leaderboard[0].full_name[:20] }}</div>
+                    <div class="podium-score">{{ leaderboard[0].score }}/180</div>
+                    <div class="podium-percent">{{ ((leaderboard[0].score / 180) * 100) | round(1) }}%</div>
+                    <div class="podium-bar"></div>
                 </div>
+
+                {% if leaderboard|length > 2 %}
+                <!-- 3rd Place -->
+                <div class="podium-card podium-3">
+                    <div class="podium-medal">🥉</div>
+                    <div class="podium-avatar">{{ leaderboard[2].full_name[0] }}</div>
+                    <div class="podium-name">{{ leaderboard[2].full_name[:20] }}</div>
+                    <div class="podium-score">{{ leaderboard[2].score }}/180</div>
+                    <div class="podium-percent">{{ ((leaderboard[2].score / 180) * 100) | round(1) }}%</div>
+                    <div class="podium-bar"></div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-            
-            <!-- 1st Place -->
-            <div class="podium-item podium-first">
-                <div class="podium-medal">👑</div>
-                <div class="podium-avatar">
-                    {{ top_scores[0][0].full_name[0].upper() }}
-                </div>
-                <div class="podium-bar"></div>
-                <div class="podium-name">{{ top_scores[0][0].full_name }}</div>
-                <div class="podium-score">{{ top_scores[0][1].score }}/180</div>
-                <div style="color: var(--text-secondary); font-size: 0.85rem;">
-                    {{ ((top_scores[0][1].score / 180) * 100) | round(1) }}%
-                </div>
-            </div>
-            
-            {% if top_scores|length > 2 %}
-            <!-- 3rd Place -->
-            <div class="podium-item podium-third">
-                <div class="podium-medal">🥉</div>
-                <div class="podium-avatar">
-                    {{ top_scores[2][0].full_name[0].upper() }}
-                </div>
-                <div class="podium-bar"></div>
-                <div class="podium-name">{{ top_scores[2][0].full_name }}</div>
-                <div class="podium-score">{{ top_scores[2][1].score }}/180</div>
-                <div style="color: var(--text-secondary); font-size: 0.85rem;">
-                    {{ ((top_scores[2][1].score / 180) * 100) | round(1) }}%
-                </div>
-            </div>
-            {% endif %}
         </div>
-        
-        <!-- Your Rank Card (if logged in and has taken exam) -->
-        {% if current_user and current_user.is_authenticated and current_user.has_taken_exam %}
-            {% set user_rank = namespace(found=false, rank=0, score=0) %}
-            {% for item in top_scores %}
-                {% if item[0].id == current_user.id %}
-                    {% set user_rank.found = true %}
-                    {% set user_rank.rank = loop.index %}
-                    {% set user_rank.score = item[1].score %}
+
+        <!-- Your Rank Card -->
+        {% if current_user and current_user.has_taken_exam %}
+            {% set user_rank = namespace(value=0) %}
+            {% for item in leaderboard %}
+                {% if item.username == current_user.username %}
+                    {% set user_rank.value = loop.index %}
                 {% endif %}
             {% endfor %}
             
-            {% if user_rank.found %}
+            {% if user_rank.value > 0 %}
             <div class="your-rank-card">
-                <div class="your-rank-info">
-                    <div class="your-rank-badge">
-                        <div class="rank-number">#{{ user_rank.rank }}</div>
-                        <div class="rank-label">Your Rank</div>
+                <div class="rank-info">
+                    <div class="rank-badge">
+                        <div class="rank-number">#{{ user_rank.value }}</div>
+                        <div class="rank-label">YOUR RANK</div>
                     </div>
-                    <div class="your-score">
-                        <div class="score-big">{{ user_rank.score }}/180</div>
-                        <div class="score-out-of">{{ ((user_rank.score / 180) * 100) | round(1) }}%</div>
+                    <div class="your-score-box">
+                        <div class="your-score-value">{{ current_user.exam_sessions|selectattr('submitted_at')|first|attr('score')|default(0) }}/180</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                            JAMB: {{ ((current_user.exam_sessions|selectattr('submitted_at')|first|attr('score')|default(0) / 180) * 400) | round(0) }}/400
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <span style="color: var(--text-secondary);">
-                        {% if user_rank.rank == 1 %}
-                            🎉 You're #1! Congratulations!
-                        {% elif user_rank.rank <= 3 %}
-                            🎊 Amazing! You're in the top 3!
-                        {% elif user_rank.rank <= 10 %}
-                            👏 Great job! You're in the top 10!
-                        {% else %}
-                            💪 Keep practicing to climb the ranks!
-                        {% endif %}
-                    </span>
+                <div class="rank-message">
+                    {% if user_rank.value == 1 %}
+                        🎉 You're #1! Outstanding performance!
+                    {% elif user_rank.value <= 3 %}
+                        🎊 Amazing! You're in the top 3!
+                    {% elif user_rank.value <= 10 %}
+                        👏 Great job! Top 10 finish!
+                    {% else %}
+                        💪 Keep practicing to climb higher!
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
         {% endif %}
-        
+
         <!-- Full Leaderboard Table -->
-        <div class="leaderboard-table-container">
+        <div class="table-container">
             <table class="leaderboard-table">
                 <thead>
                     <tr>
                         <th>Rank</th>
                         <th>Student</th>
                         <th>Score</th>
-                        <th>Percentage</th>
+                        <th>JAMB</th>
+                        <th>Accuracy</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for user, session in top_scores %}
-                    <tr class="{% if current_user and current_user.id == user.id %}current-user-row{% endif %}">
+                    {% for entry in leaderboard %}
+                    <tr class="{% if current_user and current_user.username == entry.username %}current-user-row{% endif %}">
                         <td class="rank-cell">
-                            <span class="{% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+                            <span class="rank-{% if loop.index == 1 %}1{% elif loop.index == 2 %}2{% elif loop.index == 3 %}3{% endif %}">
                                 #{{ loop.index }}
                             </span>
                         </td>
                         <td>
                             <div class="user-cell">
-                                <div class="user-avatar-small">{{ user.full_name[0].upper() }}</div>
-                                <div class="user-info">
-                                    <span class="user-name">{{ user.full_name }}</span>
-                                    <span class="user-subjects">
-                                        {{ user.get_chosen_subjects()[:2] | join(', ') }}
-                                        {% if user.get_chosen_subjects()|length > 2 %}...{% endif %}
-                                    </span>
+                                <div class="user-avatar">{{ entry.full_name[0] }}</div>
+                                <div class="user-details">
+                                    <span class="user-fullname">{{ entry.full_name }}</span>
+                                    <span class="user-subjects">@{{ entry.username }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="score-cell">{{ session.score }}/180</td>
-                        <td class="percentage-cell">{{ ((session.score / 180) * 100) | round(1) }}%</td>
+                        <td class="score-cell">{{ entry.score }}/180</td>
+                        <td class="score-cell">{{ entry.jamb_score }}/400</td>
+                        <td class="percent-cell">{{ ((entry.score / 180) * 100) | round(1) }}%</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        
+
+        <div class="leaderboard-footer">
+            <p>Showing top {{ leaderboard|length }} performers</p>
+        </div>
+
     {% else %}
         <!-- Empty State -->
         <div class="empty-state">
             <div class="empty-icon">📊</div>
-            <h3 class="empty-title">No scores yet</h3>
-            <p class="empty-message">Be the first to complete an exam and claim the top spot!</p>
-            {% if current_user and current_user.is_authenticated %}
-                {% if current_user.is_vip %}
-                    <a href="{{ url_for('start_exam') }}" class="btn btn-primary">Start Your Exam →</a>
-                {% else %}
-                    <p style="color: var(--warning);">VIP access required to take the exam.</p>
-                {% endif %}
+            <h3 class="empty-title">No Scores Yet</h3>
+            <p class="empty-message">Be the first to complete the exam and claim the top spot!</p>
+            {% if current_user and current_user.is_vip %}
+                <a href="{{ url_for('start_exam') }}" class="btn btn-primary">Start Your Exam →</a>
+            {% elif current_user %}
+                <p style="color: var(--warning);">⚠️ VIP access required to take the exam.</p>
             {% else %}
                 <a href="{{ url_for('register') }}" class="btn btn-primary">Register to Get Started →</a>
             {% endif %}
         </div>
     {% endif %}
-    
-    <!-- Info Note -->
-    <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.85rem;">
-        <p>Leaderboard updates automatically. Only completed exams are ranked.</p>
-        <p style="margin-top: 0.5rem;">
-            <a href="{{ url_for('dashboard') }}" style="color: var(--accent-gold);">← Back to Dashboard</a>
-        </p>
+
+    <!-- Back Link -->
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{{ url_for('dashboard') }}" style="color: var(--accent-gold); text-decoration: none;">← Back to Dashboard</a>
     </div>
 </div>
 {% endblock %}

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Admin Dashboard | IAE CBT{% endblock %}
 
-{% block page_title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Control Panel{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -11,66 +11,119 @@
         max-width: 1400px;
         margin: 0 auto;
     }
-    
-    .stats-overview {
+
+    /* Stats Grid */
+    .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
-    
+
     .stat-card {
-        background: var(--bg-card);
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-lg);
+        border-radius: var(--radius-xl);
         padding: 1.5rem;
-        transition: transform var(--transition-fast);
+        transition: all var(--transition-fast);
+        position: relative;
+        overflow: hidden;
     }
-    
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--accent-gold);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
     .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent-gold);
     }
-    
+
     .stat-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
-    
+
     .stat-title {
         color: var(--text-secondary);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        font-weight: 600;
     }
-    
+
     .stat-icon {
-        font-size: 1.5rem;
-        opacity: 0.7;
+        width: 48px;
+        height: 48px;
+        background: rgba(201, 160, 61, 0.15);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
     }
-    
+
     .stat-value {
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: 2.8rem;
+        font-weight: 800;
         color: var(--accent-gold);
         line-height: 1.2;
+        margin-bottom: 0.5rem;
     }
-    
+
     .stat-change {
-        color: var(--success);
+        color: var(--text-secondary);
         font-size: 0.85rem;
-        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
-    
-    .quick-actions {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--danger); }
+
+    /* Quick Actions */
+    .actions-section {
         margin-bottom: 2rem;
     }
-    
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
     .action-card {
         background: var(--bg-surface);
         border: 1px solid var(--border-color);
@@ -79,63 +132,131 @@
         display: flex;
         align-items: center;
         gap: 1rem;
-        cursor: pointer;
         transition: all var(--transition-fast);
         text-decoration: none;
+        cursor: pointer;
     }
-    
+
     .action-card:hover {
         background: var(--bg-hover);
         border-color: var(--accent-gold);
-        transform: translateX(4px);
+        transform: translateX(6px);
     }
-    
+
     .action-icon {
-        width: 48px;
-        height: 48px;
-        background: rgba(201, 160, 61, 0.15);
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, rgba(201, 160, 61, 0.2), rgba(201, 160, 61, 0.05));
         border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
-    
+
     .action-content h4 {
         margin-bottom: 0.25rem;
         color: var(--text-primary);
+        font-size: 1rem;
     }
-    
+
     .action-content p {
         margin-bottom: 0;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: var(--text-secondary);
     }
-    
-    .recent-activity {
+
+    /* Tables */
+    .data-table {
+        width: 100%;
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-lg);
-        padding: 1.5rem;
+        overflow: hidden;
     }
-    
-    .section-header {
-        display: flex;
-        justify-content: space-between;
+
+    .data-table thead {
+        background: var(--bg-surface);
+    }
+
+    .data-table th {
+        padding: 1rem;
+        text-align: left;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .data-table tr:hover {
+        background: var(--bg-hover);
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-flex;
         align-items: center;
-        margin-bottom: 1.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 600;
     }
-    
-    .section-title {
-        font-size: 1.2rem;
-        margin-bottom: 0;
+
+    .badge-success {
+        background: rgba(40, 167, 69, 0.2);
+        color: var(--success);
     }
-    
+
+    .badge-warning {
+        background: rgba(255, 193, 7, 0.2);
+        color: var(--warning);
+    }
+
+    .badge-danger {
+        background: rgba(220, 53, 69, 0.2);
+        color: var(--danger);
+    }
+
+    .badge-info {
+        background: rgba(23, 162, 184, 0.2);
+        color: var(--info);
+    }
+
+    .badge-gold {
+        background: rgba(201, 160, 61, 0.2);
+        color: var(--accent-gold);
+    }
+
+    /* Buttons */
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Recent Activity List */
     .activity-list {
         list-style: none;
         padding: 0;
+        margin: 0;
     }
-    
+
     .activity-item {
         display: flex;
         align-items: center;
@@ -143,11 +264,11 @@
         padding: 1rem 0;
         border-bottom: 1px solid var(--border-color);
     }
-    
+
     .activity-item:last-child {
         border-bottom: none;
     }
-    
+
     .activity-icon {
         width: 40px;
         height: 40px;
@@ -158,41 +279,68 @@
         justify-content: center;
         font-size: 1.2rem;
     }
-    
+
     .activity-details {
         flex: 1;
     }
-    
+
     .activity-text {
         color: var(--text-primary);
         margin-bottom: 0.25rem;
+        font-weight: 500;
     }
-    
+
     .activity-time {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-muted);
     }
-    
+
+    /* Two Column Layout */
+    .two-columns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+    }
+
+    /* Responsive */
     @media (max-width: 768px) {
         .admin-container {
             padding: 1rem;
         }
         
-        .stats-overview {
+        .stats-grid {
             grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
         
         .stat-value {
             font-size: 2rem;
         }
-    }
-    
-    @media (max-width: 480px) {
-        .stats-overview {
+        
+        .two-columns {
             grid-template-columns: 1fr;
         }
         
-        .quick-actions {
+        .data-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-actions-grid {
             grid-template-columns: 1fr;
         }
     }
@@ -202,108 +350,226 @@
 {% block content %}
 <div class="admin-container">
     <!-- Stats Overview -->
-    <div class="stats-overview">
+    <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-header">
                 <span class="stat-title">Total Users</span>
-                <span class="stat-icon">👥</span>
+                <div class="stat-icon">👥</div>
             </div>
-            <div class="stat-value">{{ total_users }}</div>
-            <div class="stat-change">↑ Registered students</div>
+            <div class="stat-value">{{ stats.total_users }}</div>
+            <div class="stat-change">
+                <span class="trend-up">↑</span> All registered students
+            </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-header">
                 <span class="stat-title">VIP Users</span>
-                <span class="stat-icon">⭐</span>
+                <div class="stat-icon">⭐</div>
             </div>
-            <div class="stat-value">{{ vip_users }}</div>
-            <div class="stat-change">{{ (vip_users / total_users * 100) | round(1) if total_users > 0 else 0 }}% of total</div>
+            <div class="stat-value">{{ stats.vip_users }}</div>
+            <div class="stat-change">
+                <span class="trend-up">↑</span> {{ (stats.vip_users / stats.total_users * 100) | round(1) if stats.total_users > 0 else 0 }}% of total
+            </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-header">
                 <span class="stat-title">Completed Exams</span>
-                <span class="stat-icon">✅</span>
+                <div class="stat-icon">✅</div>
             </div>
-            <div class="stat-value">{{ completed_exams }}</div>
-            <div class="stat-change">Total submissions</div>
+            <div class="stat-value">{{ stats.completed_exams }}</div>
+            <div class="stat-change">
+                <span class="trend-up">↑</span> Total submissions
+            </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-header">
                 <span class="stat-title">Pending VIP</span>
-                <span class="stat-icon">⏳</span>
+                <div class="stat-icon">⏳</div>
             </div>
-            <div class="stat-value">{{ pending_vip }}</div>
-            <div class="stat-change">Awaiting activation</div>
+            <div class="stat-value">{{ stats.pending_vip }}</div>
+            <div class="stat-change">
+                Awaiting activation
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Locked Accounts</span>
+                <div class="stat-icon">🔒</div>
+            </div>
+            <div class="stat-value">{{ stats.locked_users }}</div>
+            <div class="stat-change">
+                <span class="trend-down">⚠️</span> Need manual unlock
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-title">Active Sessions</span>
+                <div class="stat-icon">🎯</div>
+            </div>
+            <div class="stat-value">{{ stats.active_sessions }}</div>
+            <div class="stat-change">
+                Students currently taking exam
+            </div>
         </div>
     </div>
-    
+
     <!-- Quick Actions -->
-    <div class="quick-actions">
-        <a href="{{ url_for('admin_users') }}" class="action-card">
-            <div class="action-icon">👤</div>
-            <div class="action-content">
-                <h4>Manage Users</h4>
-                <p>View, activate, or reset user accounts</p>
-            </div>
-        </a>
-        
-        <a href="{{ url_for('admin_results') }}" class="action-card">
-            <div class="action-icon">📊</div>
-            <div class="action-content">
-                <h4>View Results</h4>
-                <p>See all student exam scores</p>
-            </div>
-        </a>
-        
-        <a href="#" class="action-card">
-            <div class="action-icon">📧</div>
-            <div class="action-content">
-                <h4>Send Notifications</h4>
-                <p>Email updates to users</p>
-            </div>
-        </a>
-        
-        <a href="#" class="action-card">
-            <div class="action-icon">⚙️</div>
-            <div class="action-content">
-                <h4>Settings</h4>
-                <p>Configure platform settings</p>
-            </div>
-        </a>
-    </div>
-    
-    <!-- Recent Activity -->
-    <div class="recent-activity">
+    <div class="actions-section">
         <div class="section-header">
-            <h3 class="section-title">📋 Recent Activity</h3>
-            <a href="{{ url_for('admin_users') }}" class="btn btn-outline btn-sm">View All</a>
+            <h2 class="section-title">
+                <span>⚡</span>
+                <span>Quick Actions</span>
+            </h2>
         </div>
-        
+        <div class="quick-actions-grid">
+            <a href="{{ url_for('admin_users') }}" class="action-card">
+                <div class="action-icon">👤</div>
+                <div class="action-content">
+                    <h4>Manage Users</h4>
+                    <p>View, activate, lock, or delete accounts</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('admin_results') }}" class="action-card">
+                <div class="action-icon">📊</div>
+                <div class="action-content">
+                    <h4>View Results</h4>
+                    <p>See all student exam scores (JAMB 400 scale)</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('export_results') }}" class="action-card">
+                <div class="action-icon">📥</div>
+                <div class="action-content">
+                    <h4>Export Results</h4>
+                    <p>Download CSV of all exam results</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('reset_all_exams') }}" class="action-card" onclick="return confirm('⚠️ Reset ALL exams? This cannot be undone.')">
+                <div class="action-icon">🔄</div>
+                <div class="action-content">
+                    <h4>Reset All Exams</h4>
+                    <p>Allow all students to retake the exam</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('admin_stats') }}" class="action-card">
+                <div class="action-icon">📈</div>
+                <div class="action-content">
+                    <h4>Advanced Stats</h4>
+                    <p>Subject performance & registration trends</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="two-columns">
+        <!-- Recent Users -->
+        <div class="panel">
+            <div class="section-header">
+                <h3 class="section-title">🆕 Recent Registrations</h3>
+                <a href="{{ url_for('admin_users') }}" class="btn-sm" style="color: var(--accent-gold);">View All →</a>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Username</th>
+                        <th>VIP</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in recent_users %}
+                    <tr>
+                        <td>{{ user.full_name[:20] }}{% if user.full_name|length > 20 %}...{% endif %}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.is_vip %}
+                            <span class="badge badge-success">⭐ VIP</span>
+                            {% else %}
+                            <span class="badge badge-warning">⏳ Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.created_at.strftime('%d/%m/%y') }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recent_users %}
+                    <tr><td colspan="4" style="text-align: center;">No users yet</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Exams -->
+        <div class="panel">
+            <div class="section-header">
+                <h3 class="section-title">📝 Recent Exam Submissions</h3>
+                <a href="{{ url_for('admin_results') }}" class="btn-sm" style="color: var(--accent-gold);">View All →</a>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Score</th>
+                        <th>JAMB</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in recent_exams %}
+                    {% set jamb_score = ((exam.score / exam.total_questions) * 400) | round(0) if exam.score else 0 %}
+                    <tr>
+                        <td>{{ exam.user.full_name[:15] }}{% if exam.user.full_name|length > 15 %}...{% endif %}</td>
+                        <td>{{ exam.score }}/{{ exam.total_questions }}</td>
+                        <td><span class="badge badge-gold">{{ jamb_score }}/400</span></td>
+                        <td>{{ exam.submitted_at.strftime('%d/%m/%y %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recent_exams %}
+                    <tr><td colspan="4" style="text-align: center;">No exams completed yet</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Admin Activity Logs -->
+    <div class="panel">
+        <div class="section-header">
+            <h3 class="section-title">📋 Admin Action Log</h3>
+        </div>
         <ul class="activity-list">
+            {% for log in admin_logs %}
             <li class="activity-item">
-                <div class="activity-icon">🆕</div>
+                <div class="activity-icon">
+                    {% if 'VIP' in log.action %}⭐
+                    {% elif 'Delete' in log.action %}🗑️
+                    {% elif 'Reset' in log.action %}🔄
+                    {% elif 'Login' in log.action %}🔐
+                    {% else %}📌
+                    {% endif %}
+                </div>
                 <div class="activity-details">
-                    <div class="activity-text">New user registered</div>
-                    <div class="activity-time">Just now</div>
+                    <div class="activity-text">{{ log.action }}</div>
+                    <div class="activity-time">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} • IP: {{ log.ip_address }}</div>
                 </div>
             </li>
+            {% endfor %}
+            {% if not admin_logs %}
             <li class="activity-item">
-                <div class="activity-icon">✅</div>
                 <div class="activity-details">
-                    <div class="activity-text">Exam completed by user123</div>
-                    <div class="activity-time">5 minutes ago</div>
+                    <div class="activity-text">No admin actions recorded yet</div>
                 </div>
             </li>
-            <li class="activity-item">
-                <div class="activity-icon">⭐</div>
-                <div class="activity-details">
-                    <div class="activity-text">VIP access granted to 3 users</div>
-                    <div class="activity-time">1 hour ago</div>
-                </div>
-            </li>
+            {% endif %}
         </ul>
     </div>
 </div>
